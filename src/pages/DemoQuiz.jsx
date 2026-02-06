@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { demoQuestions } from "../data/demoQuestions";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Timer from "../components/Timer";
 
 export default function DemoQuiz() {
@@ -8,109 +8,68 @@ export default function DemoQuiz() {
   const navigate = useNavigate();
 
   const examKey = exam?.toLowerCase();
+  const questions = demoQuestions[examKey]?.[subject] || [];
 
-  // ✅ Decide questions FIRST (no return yet)
-  const questions =
-    examKey === "dcet"
-      ? demoQuestions.dcet
-      : demoQuestions[examKey]?.[subject];
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [score, setScore] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(60); // total quiz time per question (seconds)
 
-  // ✅ ALL HOOKS MUST COME BEFORE ANY RETURN
-  const [current, setCurrent] = useState(0);
-  const [answers, setAnswers] = useState({});
-  const TOTAL_TIME = 150;
-  const [timeLeft, setTimeLeft] = useState(120);
-  
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      // Time's up, navigate to result
+      navigate(`/result/${exam}/${subject}`, { state: { score } });
+    }
+  }, [timeLeft, navigate, exam, subject, score]);
 
-  // ✅ Now it's safe to return conditionally
-  if (!questions) {
+  const handleAnswer = (isCorrect) => {
+    if (isCorrect) setScore(score + 1);
+
+    const nextIndex = currentQuestionIndex + 1;
+    if (nextIndex < questions.length) {
+      setCurrentQuestionIndex(nextIndex);
+      setTimeLeft(60); // reset timer for next question
+    } else {
+      navigate(`/result/${exam}/${subject}`, { state: { score } });
+    }
+  };
+
+  if (questions.length === 0) {
     return (
-      <div className="min-h-screen bg-background-dark text-white flex items-center justify-center text-xl">
-        Invalid Quiz
+      <div className="p-4 text-center text-white">
+        <h1 className="text-2xl font-bold">No questions found!</h1>
       </div>
     );
   }
 
-  const submitQuiz = () => {
-    navigate("/demo/result", {
-  state: {
-    questions,
-    answers,
-    timeUsed: 120 - timeLeft, // ✅ correct calculation
-
-      },
-    });
-  };
+  const currentQuestion = questions[currentQuestionIndex];
 
   return (
-    <div className="min-h-screen bg-background-dark text-white p-10">
-      
-      {/* HEADER */}
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-bold uppercase">
-          {examKey}
-          {subject ? ` - ${subject}` : ""}
-        </h2>
+    <div className="min-h-screen bg-gradient-to-b from-blue-900 to-blue-700 p-6 text-white flex flex-col items-center">
+      <h1 className="text-3xl font-bold mb-4">{exam} - {subject} Quiz</h1>
 
-        <Timer
-          timeLeft={timeLeft}
-          setTimeLeft={setTimeLeft}
-          onTimeUp={submitQuiz}
-        />
+      <Timer
+        timeLeft={timeLeft}
+        setTimeLeft={setTimeLeft}
+        onTimeUp={() => navigate(`/result/${exam}/${subject}`, { state: { score } })}
+      />
+
+      <div className="mt-6 w-full max-w-xl bg-white/10 p-6 rounded-lg shadow-lg">
+        <h2 className="text-xl font-semibold mb-4">{currentQuestion.question}</h2>
+        <div className="flex flex-col gap-3">
+          {currentQuestion.options.map((option, idx) => (
+            <button
+              key={idx}
+              className="bg-white/20 hover:bg-white/40 transition rounded p-2 text-left"
+              onClick={() => handleAnswer(option.isCorrect)}
+            >
+              {option.text}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* QUESTION */}
-      <h3 className="text-lg mb-4">
-        Q{current + 1}. {questions[current].question}
-      </h3>
-
-      {/* OPTIONS */}
-      <div className="space-y-3">
-        {questions[current].options.map((opt, index) => (
-          <button
-            key={index}
-            onClick={() =>
-              setAnswers({ ...answers, [current]: index })
-            }
-            className={`w-full p-3 rounded text-left transition
-              ${
-                answers[current] === index
-                  ? "bg-primary"
-                  : "bg-[#1c2127]"
-              }
-              hover:bg-primary/40`}
-          >
-            {opt}
-          </button>
-        ))}
-      </div>
-
-      {/* NAVIGATION */}
-      <div className="flex justify-between mt-8">
-        <button
-          disabled={current === 0}
-          onClick={() => setCurrent(current - 1)}
-          className="px-6 py-2 rounded bg-[#1c2127] hover:bg-primary/40 disabled:opacity-40"
-        >
-          Previous
-        </button>
-
-        {current === questions.length - 1 ? (
-          <button
-            onClick={submitQuiz}
-            className="bg-primary px-6 py-2 rounded hover:opacity-90"
-          >
-            Submit
-          </button>
-        ) : (
-          <button
-            onClick={() => setCurrent(current + 1)}
-            className="px-6 py-2 rounded bg-[#1c2127] hover:bg-primary/40"
-          >
-            Next
-          </button>
-        )}
-      </div>
+      <p className="mt-6">Question {currentQuestionIndex + 1} of {questions.length}</p>
+      <p>Score: {score}</p>
     </div>
   );
 }

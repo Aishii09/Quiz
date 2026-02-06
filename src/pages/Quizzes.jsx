@@ -37,7 +37,7 @@ export default function Quizzes() {
     }, 15000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [quotes.length]); // ✅ added quotes.length to satisfy ESLint
 
   /* ================= SAVE LAST QUIZ ================= */
   const startQuiz = (quizId) => {
@@ -57,9 +57,7 @@ export default function Quizzes() {
       <main className="max-w-7xl mx-auto px-6 lg:px-10 py-20">
         {/* TITLE */}
         <div className="mb-10">
-          <h1 className="text-4xl lg:text-5xl font-bold mb-4">
-            Quiz Master
-          </h1>
+          <h1 className="text-4xl lg:text-5xl font-bold mb-4">Quiz Master</h1>
           <p className="text-slate-400 max-w-2xl">
             Choose your competitive exam and start your journey towards excellence.
           </p>
@@ -69,7 +67,6 @@ export default function Quizzes() {
         <div className="mb-14">
           <div className="relative rounded-2xl overflow-hidden bg-[#1c2127] shadow-2xl border border-white/10">
             <div className="relative grid md:grid-cols-2 gap-10 p-10 items-center">
-              
               <div className="relative hidden md:flex items-center justify-center">
                 <div className="absolute w-72 h-72 rounded-full border border-blue-500/20 animate-spin-slow" />
                 <div className="absolute w-48 h-48 rounded-full border border-white/10" />
@@ -105,24 +102,17 @@ export default function Quizzes() {
 
         {/* ================= ALL QUIZZES ================= */}
         <div>
-          <h2 className="text-2xl font-bold mb-6">
-            All Competitive Exams
-          </h2>
+          <h2 className="text-2xl font-bold mb-6">All Competitive Exams</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            
             {/* JEE */}
             <div className="bg-[#1c2127] rounded-xl p-6 border border-white/5 flex flex-col justify-between">
               <div>
                 <span className="material-symbols-outlined text-primary text-4xl">
                   engineering
                 </span>
-                <h3 className="text-xl font-bold mt-4">
-                  JEE Main & Advanced
-                </h3>
-                <p className="text-slate-400 text-sm mt-2">
-                  IIT & NIT entrance preparation.
-                </p>
+                <h3 className="text-xl font-bold mt-4">JEE Main & Advanced</h3>
+                <p className="text-slate-400 text-sm mt-2">IIT & NIT entrance preparation.</p>
               </div>
               <div className="flex gap-3 mt-6">
                 <Link
@@ -148,12 +138,8 @@ export default function Quizzes() {
                 <span className="material-symbols-outlined text-teal-accent text-4xl">
                   medical_services
                 </span>
-                <h3 className="text-xl font-bold mt-4">
-                  NEET (UG)
-                </h3>
-                <p className="text-slate-400 text-sm mt-2">
-                  Medical entrance preparation.
-                </p>
+                <h3 className="text-xl font-bold mt-4">NEET (UG)</h3>
+                <p className="text-slate-400 text-sm mt-2">Medical entrance preparation.</p>
               </div>
               <div className="flex gap-3 mt-6">
                 <Link
@@ -176,15 +162,9 @@ export default function Quizzes() {
             {/* CET */}
             <div className="bg-[#1c2127] rounded-xl p-6 border border-white/5 flex flex-col justify-between">
               <div>
-                <span className="material-symbols-outlined text-primary text-4xl">
-                  school
-                </span>
-                <h3 className="text-xl font-bold mt-4">
-                  CET
-                </h3>
-                <p className="text-slate-400 text-sm mt-2">
-                  Karnataka CET preparation.
-                </p>
+                <span className="material-symbols-outlined text-primary text-4xl">school</span>
+                <h3 className="text-xl font-bold mt-4">CET</h3>
+                <p className="text-slate-400 text-sm mt-2">Karnataka CET preparation.</p>
               </div>
               <div className="flex gap-3 mt-6">
                 <Link
@@ -203,7 +183,6 @@ export default function Quizzes() {
                 </Link>
               </div>
             </div>
-
           </div>
         </div>
       </main>
