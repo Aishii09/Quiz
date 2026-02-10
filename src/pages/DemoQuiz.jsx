@@ -4,39 +4,37 @@ import { useState, useEffect } from "react";
 import Timer from "../components/Timer";
 
 export default function DemoQuiz() {
-  const { exam, subject } = useParams();
+  const { quizId } = useParams(); // 👈 ONE param
   const navigate = useNavigate();
 
-  const examKey = exam?.toLowerCase();
-  const questions = demoQuestions[examKey]?.[subject] || [];
+  const questions = demoQuestions[quizId] || [];
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(60); // total quiz time per question (seconds)
+  const [timeLeft, setTimeLeft] = useState(60);
 
   useEffect(() => {
     if (timeLeft <= 0) {
-      // Time's up, navigate to result
-      navigate(`/result/${exam}/${subject}`, { state: { score } });
+      navigate(`/result/${quizId}`, { state: { score } });
     }
-  }, [timeLeft, navigate, exam, subject, score]);
+  }, [timeLeft, navigate, quizId, score]);
 
   const handleAnswer = (isCorrect) => {
-    if (isCorrect) setScore(score + 1);
+    if (isCorrect) setScore((prev) => prev + 1);
 
     const nextIndex = currentQuestionIndex + 1;
     if (nextIndex < questions.length) {
       setCurrentQuestionIndex(nextIndex);
-      setTimeLeft(60); // reset timer for next question
+      setTimeLeft(60);
     } else {
-      navigate(`/result/${exam}/${subject}`, { state: { score } });
+      navigate(`/result/${quizId}`, { state: { score } });
     }
   };
 
   if (questions.length === 0) {
     return (
-      <div className="p-4 text-center text-white">
-        <h1 className="text-2xl font-bold">No questions found!</h1>
+      <div className="p-6 text-center text-white">
+        <h1 className="text-2xl font-bold">No questions found for this quiz.</h1>
       </div>
     );
   }
@@ -45,16 +43,21 @@ export default function DemoQuiz() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-900 to-blue-700 p-6 text-white flex flex-col items-center">
-      <h1 className="text-3xl font-bold mb-4">{exam} - {subject} Quiz</h1>
+      <h1 className="text-3xl font-bold mb-4">
+        {quizId.toUpperCase()} Quiz
+      </h1>
 
       <Timer
         timeLeft={timeLeft}
         setTimeLeft={setTimeLeft}
-        onTimeUp={() => navigate(`/result/${exam}/${subject}`, { state: { score } })}
+        onTimeUp={() => navigate(`/result/${quizId}`, { state: { score } })}
       />
 
       <div className="mt-6 w-full max-w-xl bg-white/10 p-6 rounded-lg shadow-lg">
-        <h2 className="text-xl font-semibold mb-4">{currentQuestion.question}</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          {currentQuestion.question}
+        </h2>
+
         <div className="flex flex-col gap-3">
           {currentQuestion.options.map((option, idx) => (
             <button
@@ -68,7 +71,9 @@ export default function DemoQuiz() {
         </div>
       </div>
 
-      <p className="mt-6">Question {currentQuestionIndex + 1} of {questions.length}</p>
+      <p className="mt-6">
+        Question {currentQuestionIndex + 1} of {questions.length}
+      </p>
       <p>Score: {score}</p>
     </div>
   );
