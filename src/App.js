@@ -33,9 +33,10 @@ function App() {
         <Route path="/demo" element={<DemoHome />} />
         <Route path="/demo/:exam" element={<DemoSubjects />} />
         <Route path="/demo/:exam/:subject" element={<DemoQuiz />} />
-        <Route path="/demo/result" element={<DemoResult />} />
+        <Route path="/result/:exam/:subject" element={<DemoResult />} />
+
         <Route path="/demo/:exam/start" element={<DemoQuiz />} />
-<Route path="/demo/:exam/:subject" element={<DemoQuiz />} />
+        <Route path="/demo/:exam/:subject" element={<DemoQuiz />} />
 
         
         

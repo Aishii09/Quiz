@@ -1,4 +1,4 @@
-export const demoQuestions = {
+const demoQuestions = {
   neet: {
     physics: [
       {
@@ -12,19 +12,19 @@ export const demoQuestions = {
         correctAnswer: "3×10⁸ m/s",
       },
       {
-        question: "SI unit of pressure is?",
-        options: ["Pascal", "Newton", "Joule", "Watt"],
-        correctAnswer: "Pascal",
+        question: "Unit of energy is?",
+        options: ["Joule", "Newton", "Watt", "Volt"],
+        correctAnswer: "Joule",
       },
       {
-        question: "Which is a vector quantity?",
-        options: ["Velocity", "Speed", "Mass", "Time"],
-        correctAnswer: "Velocity",
+        question: "Instrument to measure current?",
+        options: ["Ammeter", "Voltmeter", "Barometer", "Thermometer"],
+        correctAnswer: "Ammeter",
       },
       {
-        question: "Gravitational force is?",
-        options: ["Attractive", "Repulsive", "Neutral", "Variable"],
-        correctAnswer: "Attractive",
+        question: "Acceleration due to gravity on Earth?",
+        options: ["9.8 m/s²", "10 m/s²", "8.9 m/s²", "12 m/s²"],
+        correctAnswer: "9.8 m/s²",
       },
     ],
 
@@ -35,24 +35,24 @@ export const demoQuestions = {
         correctAnswer: "H₂O",
       },
       {
-        question: "pH value of neutral solution?",
-        options: ["7", "1", "14", "0"],
+        question: "pH of neutral solution?",
+        options: ["7", "5", "9", "1"],
         correctAnswer: "7",
       },
       {
         question: "Atomic number of Oxygen?",
-        options: ["8", "16", "6", "10"],
+        options: ["8", "6", "12", "10"],
         correctAnswer: "8",
       },
       {
-        question: "Which is an acid?",
-        options: ["HCl", "NaOH", "NaCl", "KOH"],
-        correctAnswer: "HCl",
+        question: "Gas essential for combustion?",
+        options: ["Oxygen", "Nitrogen", "Hydrogen", "Carbon"],
+        correctAnswer: "Oxygen",
       },
       {
-        question: "Gas used in photosynthesis?",
-        options: ["CO₂", "O₂", "N₂", "H₂"],
-        correctAnswer: "CO₂",
+        question: "NaCl is commonly known as?",
+        options: ["Salt", "Sugar", "Acid", "Base"],
+        correctAnswer: "Salt",
       },
     ],
 
@@ -63,23 +63,23 @@ export const demoQuestions = {
         correctAnswer: "Cell",
       },
       {
+        question: "Powerhouse of the cell?",
+        options: ["Mitochondria", "Nucleus", "Ribosome", "Chloroplast"],
+        correctAnswer: "Mitochondria",
+      },
+      {
         question: "Blood group universal donor?",
-        options: ["O−", "O+", "AB+", "AB−"],
-        correctAnswer: "O−",
+        options: ["O-", "AB+", "A+", "B-"],
+        correctAnswer: "O-",
       },
       {
         question: "Photosynthesis occurs in?",
-        options: ["Chloroplast", "Mitochondria", "Nucleus", "Ribosome"],
+        options: ["Chloroplast", "Mitochondria", "Nucleus", "Cytoplasm"],
         correctAnswer: "Chloroplast",
       },
       {
-        question: "Human heart has how many chambers?",
-        options: ["4", "2", "3", "5"],
-        correctAnswer: "4",
-      },
-      {
         question: "Largest organ in human body?",
-        options: ["Skin", "Liver", "Heart", "Brain"],
+        options: ["Skin", "Heart", "Brain", "Liver"],
         correctAnswer: "Skin",
       },
     ],
@@ -93,24 +93,24 @@ export const demoQuestions = {
         correctAnswer: "Joule",
       },
       {
-        question: "Acceleration due to gravity?",
-        options: ["9.8 m/s²", "10 m/s²", "8 m/s²", "9 m/s"],
-        correctAnswer: "9.8 m/s²",
-      },
-      {
-        question: "Ohm’s law is?",
-        options: ["V = IR", "P = IV", "E = mc²", "F = ma"],
-        correctAnswer: "V = IR",
-      },
-      {
         question: "Unit of power?",
-        options: ["Watt", "Joule", "Newton", "Ampere"],
+        options: ["Watt", "Joule", "Newton", "Volt"],
         correctAnswer: "Watt",
       },
       {
-        question: "Charge of electron?",
-        options: ["Negative", "Positive", "Neutral", "Variable"],
-        correctAnswer: "Negative",
+        question: "Formula of velocity?",
+        options: ["Distance/Time", "Mass×Acceleration", "Force/Area", "Work/Time"],
+        correctAnswer: "Distance/Time",
+      },
+      {
+        question: "Unit of pressure?",
+        options: ["Pascal", "Newton", "Watt", "Volt"],
+        correctAnswer: "Pascal",
+      },
+      {
+        question: "Device to measure voltage?",
+        options: ["Voltmeter", "Ammeter", "Barometer", "Thermometer"],
+        correctAnswer: "Voltmeter",
       },
     ],
 
@@ -121,29 +121,24 @@ export const demoQuestions = {
         correctAnswer: "6",
       },
       {
-        question: "Strong acid?",
-        options: ["HCl", "CH₃COOH", "H₂CO₃", "NH₄OH"],
-        correctAnswer: "HCl",
+        question: "Symbol of Gold?",
+        options: ["Au", "Ag", "Gd", "Go"],
+        correctAnswer: "Au",
       },
       {
-        question: "Avogadro number?",
-        options: [
-          "6.022×10²³",
-          "6.022×10²²",
-          "6.022×10²¹",
-          "6.022×10²⁰",
-        ],
-        correctAnswer: "6.022×10²³",
-      },
-      {
-        question: "pH of acidic solution?",
-        options: ["<7", ">7", "=7", "0"],
-        correctAnswer: "<7",
-      },
-      {
-        question: "Most abundant gas in air?",
-        options: ["Nitrogen", "Oxygen", "CO₂", "Hydrogen"],
+        question: "Most abundant gas in atmosphere?",
+        options: ["Nitrogen", "Oxygen", "Hydrogen", "Carbon dioxide"],
         correctAnswer: "Nitrogen",
+      },
+      {
+        question: "HCl is an example of?",
+        options: ["Acid", "Base", "Salt", "Metal"],
+        correctAnswer: "Acid",
+      },
+      {
+        question: "Avogadro number approximately?",
+        options: ["6.022×10²³", "3×10⁸", "9.8", "1.6×10⁻¹⁹"],
+        correctAnswer: "6.022×10²³",
       },
     ],
 
@@ -154,24 +149,24 @@ export const demoQuestions = {
         correctAnswer: "2x",
       },
       {
-        question: "Value of π?",
-        options: ["3.14", "2.14", "1.14", "4.14"],
+        question: "Value of π approximately?",
+        options: ["3.14", "2.17", "1.61", "4.13"],
         correctAnswer: "3.14",
       },
       {
+        question: "Integral of 1 dx?",
+        options: ["x + C", "1", "0", "C"],
+        correctAnswer: "x + C",
+      },
+      {
         question: "sin 90°?",
-        options: ["1", "0", "-1", "0.5"],
+        options: ["1", "0", "-1", "½"],
         correctAnswer: "1",
       },
       {
-        question: "Square root of 16?",
-        options: ["4", "2", "8", "6"],
-        correctAnswer: "4",
-      },
-      {
-        question: "5² equals?",
-        options: ["25", "10", "20", "15"],
-        correctAnswer: "25",
+        question: "2³ equals?",
+        options: ["8", "6", "9", "4"],
+        correctAnswer: "8",
       },
     ],
   },
@@ -184,24 +179,24 @@ export const demoQuestions = {
         correctAnswer: "Ampere",
       },
       {
-        question: "Speed =?",
-        options: ["Distance/Time", "Time/Distance", "Force/Mass", "Work/Time"],
+        question: "Unit of resistance?",
+        options: ["Ohm", "Volt", "Ampere", "Watt"],
+        correctAnswer: "Ohm",
+      },
+      {
+        question: "SI unit of mass?",
+        options: ["Kilogram", "Gram", "Newton", "Watt"],
+        correctAnswer: "Kilogram",
+      },
+      {
+        question: "Speed formula?",
+        options: ["Distance/Time", "Mass×Acceleration", "Work/Time", "Force/Area"],
         correctAnswer: "Distance/Time",
       },
       {
-        question: "SI unit of energy?",
-        options: ["Joule", "Watt", "Newton", "Ampere"],
-        correctAnswer: "Joule",
-      },
-      {
-        question: "Heat transfer by contact?",
-        options: ["Conduction", "Radiation", "Convection", "Reflection"],
-        correctAnswer: "Conduction",
-      },
-      {
-        question: "Which is scalar?",
-        options: ["Speed", "Velocity", "Force", "Acceleration"],
-        correctAnswer: "Speed",
+        question: "Unit of temperature?",
+        options: ["Kelvin", "Celsius", "Fahrenheit", "Joule"],
+        correctAnswer: "Kelvin",
       },
     ],
 
@@ -212,62 +207,52 @@ export const demoQuestions = {
         correctAnswer: "Na",
       },
       {
-        question: "Acid in stomach?",
-        options: ["HCl", "H₂SO₄", "HNO₃", "CH₃COOH"],
-        correctAnswer: "HCl",
+        question: "Symbol of Iron?",
+        options: ["Fe", "Ir", "In", "F"],
+        correctAnswer: "Fe",
       },
       {
-        question: "Neutralization is?",
-        options: [
-          "Acid + Base",
-          "Acid + Acid",
-          "Base + Base",
-          "Salt + Salt",
-        ],
-        correctAnswer: "Acid + Base",
+        question: "CO₂ is?",
+        options: ["Carbon dioxide", "Oxygen", "Hydrogen", "Nitrogen"],
+        correctAnswer: "Carbon dioxide",
       },
       {
-        question: "pH of water?",
-        options: ["7", "5", "9", "3"],
-        correctAnswer: "7",
+        question: "pH less than 7 means?",
+        options: ["Acidic", "Basic", "Neutral", "Salt"],
+        correctAnswer: "Acidic",
       },
       {
-        question: "Chemical formula of CO₂?",
-        options: ["CO₂", "CO", "C₂O", "O₂"],
-        correctAnswer: "CO₂",
+        question: "Water freezes at?",
+        options: ["0°C", "100°C", "50°C", "10°C"],
+        correctAnswer: "0°C",
       },
     ],
 
     biology: [
       {
         question: "Plant food preparation?",
-        options: [
-          "Photosynthesis",
-          "Respiration",
-          "Transpiration",
-          "Digestion",
-        ],
+        options: ["Photosynthesis", "Respiration", "Transpiration", "Digestion"],
         correctAnswer: "Photosynthesis",
       },
       {
-        question: "Green pigment?",
-        options: ["Chlorophyll", "Hemoglobin", "Melanin", "Carotene"],
-        correctAnswer: "Chlorophyll",
+        question: "Human heart has how many chambers?",
+        options: ["4", "2", "3", "5"],
+        correctAnswer: "4",
       },
       {
-        question: "Brain part for thinking?",
-        options: ["Cerebrum", "Cerebellum", "Medulla", "Pons"],
-        correctAnswer: "Cerebrum",
+        question: "Largest bone in body?",
+        options: ["Femur", "Tibia", "Humerus", "Skull"],
+        correctAnswer: "Femur",
       },
       {
-        question: "Blood cells carrying oxygen?",
-        options: ["RBC", "WBC", "Platelets", "Plasma"],
-        correctAnswer: "RBC",
+        question: "Blood is pumped by?",
+        options: ["Heart", "Lungs", "Kidney", "Brain"],
+        correctAnswer: "Heart",
       },
       {
-        question: "Respiratory organ?",
-        options: ["Lungs", "Heart", "Kidney", "Liver"],
-        correctAnswer: "Lungs",
+        question: "Vitamin C prevents?",
+        options: ["Scurvy", "Rickets", "Night blindness", "Anemia"],
+        correctAnswer: "Scurvy",
       },
     ],
 
@@ -278,29 +263,27 @@ export const demoQuestions = {
         correctAnswer: "4",
       },
       {
+        question: "5 × 6?",
+        options: ["30", "25", "35", "20"],
+        correctAnswer: "30",
+      },
+      {
+        question: "Square of 9?",
+        options: ["81", "72", "99", "18"],
+        correctAnswer: "81",
+      },
+      {
+        question: "√16?",
+        options: ["4", "3", "5", "6"],
+        correctAnswer: "4",
+      },
+      {
         question: "10 ÷ 2?",
-        options: ["5", "4", "6", "8"],
+        options: ["5", "2", "8", "4"],
         correctAnswer: "5",
       },
-      {
-        question: "Area of square?",
-        options: ["a²", "2a", "a³", "a"],
-        correctAnswer: "a²",
-      },
-      {
-        question: "Odd number?",
-        options: ["3", "2", "4", "6"],
-        correctAnswer: "3",
-      },
-      {
-        question: "Even number?",
-        options: ["8", "7", "9", "5"],
-        correctAnswer: "8",
-      },
     ],
-
-    
-
-
   },
 };
+
+export default demoQuestions;
