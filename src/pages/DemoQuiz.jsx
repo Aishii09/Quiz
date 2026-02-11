@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import demoQuestions from "../data/demoQuestions";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Timer from "../components/Timer";
 import Navbar from "../components/Navbar";
 
@@ -11,30 +11,32 @@ export default function DemoQuiz() {
   const examKey = exam?.toLowerCase();
   const subjectKey = subject?.toLowerCase();
 
-  const questions = demoQuestions[examKey]?.[subjectKey] || [];
+  // ✅ Use useMemo to prevent unnecessary re-renders / ESLint warning
+  const questions = useMemo(() => {
+    return demoQuestions[examKey]?.[subjectKey] || [];
+  }, [examKey, subjectKey]);
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
-  const [timeLeft, setTimeLeft] = useState(60); // 🔥 TOTAL exam time
+  const [timeLeft, setTimeLeft] = useState(60); // 🔥 Total exam time
 
-  // ✅ AUTO SUBMIT WHEN TIME = 0
+  // ✅ Auto submit when timer reaches 0
   useEffect(() => {
     if (timeLeft === 0) {
       navigate(`/result/${exam}/${subject}`, {
-        state: {
-          questions,
-          answers,
-        },
+        state: { questions, answers },
       });
     }
   }, [timeLeft, navigate, exam, subject, questions, answers]);
 
+  // If no questions, show nothing (or you can show a message)
   if (questions.length === 0) {
     return null;
   }
 
   const currentQuestion = questions[currentQuestionIndex];
 
+  // ✅ Select option
   const handleOptionSelect = (index) => {
     setAnswers({
       ...answers,
@@ -42,20 +44,19 @@ export default function DemoQuiz() {
     });
   };
 
+  // ✅ Next question / Finish
   const handleNext = () => {
     if (currentQuestionIndex + 1 < questions.length) {
       setCurrentQuestionIndex((prev) => prev + 1);
     } else {
       // Manual submit
       navigate(`/result/${exam}/${subject}`, {
-        state: {
-          questions,
-          answers,
-        },
+        state: { questions, answers },
       });
     }
   };
 
+  // ✅ Previous question
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex((prev) => prev - 1);
@@ -77,7 +78,7 @@ export default function DemoQuiz() {
           </p>
         </div>
 
-        {/* TIMER (TOTAL TIMER) */}
+        {/* TIMER */}
         <div className="flex justify-center mb-8">
           <Timer
             timeLeft={timeLeft}
@@ -102,11 +103,11 @@ export default function DemoQuiz() {
                 key={idx}
                 onClick={() => handleOptionSelect(idx)}
                 className={`w-full p-3 rounded-xl text-left transition-all duration-300
-                ${
-                  answers[currentQuestionIndex] === idx
-                    ? "bg-primary text-white scale-105"
-                    : "bg-white/10 hover:bg-white/20"
-                }`}
+                  ${
+                    answers[currentQuestionIndex] === idx
+                      ? "bg-primary text-white scale-105"
+                      : "bg-white/10 hover:bg-white/20"
+                  }`}
               >
                 {option}
               </button>
