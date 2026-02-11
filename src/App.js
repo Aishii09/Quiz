@@ -1,5 +1,6 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
+// MAIN PAGES
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -10,19 +11,27 @@ import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
 import Bookmarks from "./pages/Bookmarks";
 
-// DEMO / QUIZ FLOW
+// DEMO
 import DemoHome from "./pages/DemoHome";
 import DemoQuiz from "./pages/DemoQuiz";
 import DemoResult from "./pages/DemoResult";
+
+// ADMIN (ONLY THIS)
+import Admin from "./pages/Admin";
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* AUTH & MAIN */}
+
+        {/* DEFAULT */}
         <Route path="/" element={<Landing />} />
+
+        {/* AUTH */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+
+        {/* USER */}
         <Route path="/home" element={<Home />} />
         <Route path="/quizzes" element={<Quizzes />} />
         <Route path="/results" element={<Results />} />
@@ -32,10 +41,15 @@ function App() {
 
         {/* DEMO */}
         <Route path="/demo" element={<DemoHome />} />
-
-        {/* QUIZ ROUTES (IMPORTANT) */}
         <Route path="/quiz/:quizId" element={<DemoQuiz />} />
         <Route path="/result/:quizId" element={<DemoResult />} />
+
+        {/* ADMIN */}
+        <Route path="/admin" element={<Admin />} />
+
+        {/* FALLBACK */}
+        <Route path="*" element={<Navigate to="/" />} />
+
       </Routes>
     </Router>
   );

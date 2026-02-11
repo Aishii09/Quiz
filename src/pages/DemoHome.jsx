@@ -14,7 +14,7 @@ export default function DemoHome() {
         {exams.map((exam) => (
           <div
             key={exam}
-            onClick={() => navigate(`/demo/${exam}`)}
+            onClick={() => navigate(`/quiz/${exam}`)}
             className="bg-[#1c2127] p-8 rounded-xl text-center cursor-pointer hover:bg-primary/20 hover:scale-105 transition"
           >
             <h2 className="text-2xl font-bold uppercase">{exam}</h2>
