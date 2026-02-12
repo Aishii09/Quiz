@@ -1,8 +1,25 @@
 import Navbar from "../components/Navbar";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function Results() {
+  const [quizHistory, setQuizHistory] = useState([]);
 
-  const score = 85; // you can later replace with dynamic value
+  // Replace this with logged-in user's ID from your auth
+  const studentId = localStorage.getItem("studentId");
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const res = await axios.get(`/api/attempt/user/${studentId}`);
+        setQuizHistory(res.data || []);
+      } catch (err) {
+        console.error("Failed to fetch quiz history:", err);
+      }
+    };
+
+    if (studentId) fetchHistory();
+  }, [studentId]);
 
   const getBadge = (score) => {
     if (score >= 85) return "Excellent 🔥";
@@ -12,14 +29,12 @@ export default function Results() {
 
   return (
     <div className="bg-background-dark text-white min-h-screen font-display">
-
       {/* SAME HEADER AS LANDING */}
       <Navbar />
 
       {/* MAIN */}
       <main className="flex justify-center py-20 px-4">
         <div className="max-w-[1000px] w-full">
-
           <div className="text-center mb-12">
             <h1 className="text-[42px] font-bold">Test Completed</h1>
             <p className="text-white/60 text-lg">
@@ -39,7 +54,9 @@ export default function Results() {
                 }}
               />
               <div className="z-10 text-center">
-                <p className="text-6xl font-bold">{score}%</p>
+                <p className="text-6xl font-bold">
+                  {quizHistory[0]?.score || 0}%
+                </p>
                 <p className="text-primary text-sm uppercase tracking-widest">
                   Overall Score
                 </p>
@@ -50,7 +67,7 @@ export default function Results() {
           {/* PERFORMANCE BADGE */}
           <div className="text-center mb-10">
             <span className="inline-block px-6 py-2 rounded-full bg-primary/20 text-primary font-bold">
-              {getBadge(score)}
+              {getBadge(quizHistory[0]?.score || 0)}
             </span>
           </div>
 
@@ -65,95 +82,93 @@ export default function Results() {
           <div className="max-w-md mx-auto bg-white/5 border border-white/10 rounded-xl p-4">
             <div className="flex justify-between mb-2">
               <span>Percentile Rank</span>
-              <span className="text-primary font-bold">98th Percentile</span>
+              <span className="text-primary font-bold">
+                {quizHistory[0]?.percentile || "N/A"}
+              </span>
             </div>
             <div className="h-2 bg-white/10 rounded">
-              <div className="h-2 bg-primary rounded" style={{ width: "98%" }} />
+              <div
+                className="h-2 bg-primary rounded"
+                style={{ width: quizHistory[0]?.percentile || "0%" }}
+              />
             </div>
             <p className="text-xs italic text-center text-white/50 mt-2">
-              You are in the top 2% performers 🔥
+              {quizHistory[0]
+                ? `You are in the top ${100 - parseInt(quizHistory[0].percentile || 0)}% performers 🔥`
+                : "You haven’t attempted any quiz yet"}
             </p>
           </div>
-
         </div>
       </main>
-{/* ================= QUIZ HISTORY ================= */}
-<div className="mt-16 mx-auto max-w-[1000px] bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
-  <h2 className="text-xl font-bold px-6 py-4 border-b border-white/10">
-    Previous Quiz Attempts
-  </h2>
 
-  <div className="overflow-x-auto">
-    <table className="w-full text-left">
-      <thead className="bg-white/5 text-white/60 text-sm">
-        <tr>
-          <th className="px-6 py-3">Date</th>
-          <th className="px-6 py-3">Exam</th>
-          <th className="px-6 py-3">Start Time</th>
-          <th className="px-6 py-3">End Time</th>
-          <th className="px-6 py-3 text-right">Score</th>
-          <th className="px-6 py-3 text-center">View</th>
-        </tr>
-      </thead>
+      {/* ================= QUIZ HISTORY ================= */}
+      <div className="mt-16 mx-auto max-w-[1000px] bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
+        <h2 className="text-xl font-bold px-6 py-4 border-b border-white/10">
+          Previous Quiz Attempts
+        </h2>
 
-      <tbody>
-        {JSON.parse(localStorage.getItem("quizHistory") || "[]").length === 0 && (
-          <tr>
-            <td colSpan="6" className="text-center py-8 text-white/40">
-              No previous attempts found
-            </td>
-          </tr>
-        )}
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead className="bg-white/5 text-white/60 text-sm">
+              <tr>
+                <th className="px-6 py-3">Date</th>
+                <th className="px-6 py-3">Exam</th>
+                <th className="px-6 py-3">Start Time</th>
+                <th className="px-6 py-3">End Time</th>
+                <th className="px-6 py-3 text-right">Score</th>
+                <th className="px-6 py-3 text-center">View</th>
+              </tr>
+            </thead>
 
-        {JSON.parse(localStorage.getItem("quizHistory") || "[]").map(
-          (item, index) => (
-            <tr
-              key={index}
-              className="border-t border-white/10 hover:bg-white/5 transition"
-            >
-              <td className="px-6 py-4">{item.date}</td>
-              <td className="px-6 py-4 font-bold">{item.exam}</td>
-              <td className="px-6 py-4">{item.startTime}</td>
-              <td className="px-6 py-4">{item.endTime}</td>
-
-              {/* SCORE */}
-              <td className="px-6 py-4 text-right font-bold text-primary">
-                {item.percentage}%
-              </td>
-
-              {/* ACTION BUTTON */}
-              <td className="px-6 py-4 text-center">
-                <button
-                  onClick={() => {
-                    localStorage.setItem(
-                      "selectedAttempt",
-                      JSON.stringify(item)
-                    );
-                    window.location.href = "/review";
-                  }}
-                  className="px-4 py-1.5 rounded-full text-sm font-bold 
-                             text-blue-400 border border-blue-400/40
-                             hover:bg-blue-400 hover:text-background-dark
-                             transition"
-                >
-                  View
-                </button>
-              </td>
-            </tr>
-          )
-        )}
-      </tbody>
-    </table>
-  </div>
-</div>
-
-
+            <tbody>
+              {quizHistory.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="text-center py-8 text-white/40">
+                    No previous attempts found
+                  </td>
+                </tr>
+              ) : (
+                quizHistory.map((item, index) => (
+                  <tr
+                    key={index}
+                    className="border-t border-white/10 hover:bg-white/5 transition"
+                  >
+                    <td className="px-6 py-4">
+                      {new Date(item.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 font-bold">{item.quiz.title}</td>
+                    <td className="px-6 py-4">
+                      {new Date(item.createdAt).toLocaleTimeString()}
+                    </td>
+                    <td className="px-6 py-4">
+                      {new Date(item.completedAt || item.createdAt).toLocaleTimeString()}
+                    </td>
+                    <td className="px-6 py-4 text-right font-bold text-primary">
+                      {item.score}%
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <button
+                        onClick={() => {
+                          localStorage.setItem("selectedAttempt", JSON.stringify(item));
+                          window.location.href = "/review";
+                        }}
+                        className="px-4 py-1.5 rounded-full text-sm font-bold text-blue-400 border border-blue-400/40 hover:bg-blue-400 hover:text-background-dark transition"
+                      >
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       {/* SAME FOOTER STYLE AS LANDING */}
       <footer className="border-t border-white/10 py-8 text-center text-white/40 mt-16">
         © 2024 Quiz Master. All rights reserved.
       </footer>
-
     </div>
   );
 }

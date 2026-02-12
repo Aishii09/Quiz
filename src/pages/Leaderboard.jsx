@@ -1,15 +1,42 @@
 import Navbar from "../components/Navbar";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function Leaderboard() {
+  const [topUsers, setTopUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch leaderboard from backend
+  useEffect(() => {
+    const fetchLeaderboard = async () => {
+      try {
+        const res = await axios.get("/api/attempt/leaderboard"); // your backend endpoint
+        setTopUsers(res.data || []);
+      } catch (err) {
+        console.log("Error fetching leaderboard:", err);
+        setTopUsers([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLeaderboard();
+  }, []);
+
+  // Prepare podium data
+  const podium = [
+    topUsers[0] || { name: "Rank 1", accuracy: "0%", points: "0" },
+    topUsers[1] || { name: "Rank 2", accuracy: "0%", points: "0" },
+    topUsers[2] || { name: "Rank 3", accuracy: "0%", points: "0" },
+  ];
+
   return (
     <div className="bg-background-dark text-white min-h-screen font-display">
-      
       <Navbar />
 
       <main className="px-6 py-20 flex justify-center">
         <div className="max-w-[1200px] w-full">
-
           {/* TITLE SECTION */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -28,9 +55,12 @@ export default function Leaderboard() {
 
             <div className="flex gap-10">
               <div className="text-right">
-                <p className="text-primary text-2xl font-black">12,840</p>
+                <p className="text-primary text-2xl font-black">
+                  {topUsers.length}
+                </p>
                 <p className="text-xs uppercase text-white/50">Active Users</p>
               </div>
+
               <div className="text-right">
                 <p className="text-2xl font-black">Top 5%</p>
                 <p className="text-xs uppercase text-green-400">Your Status</p>
@@ -39,10 +69,31 @@ export default function Leaderboard() {
           </motion.div>
 
           {/* PODIUM */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            <RankCard rank={2} name="Alex Rivera" accuracy="98.2%" points="14,205" />
-            <RankCard rank={1} name="Sarah Jenkins" accuracy="99.8%" points="15,890" champion />
-            <RankCard rank={3} name="David Chen" accuracy="97.5%" points="13,950" />
+          <div className="grid grid-cols-3 gap-8 mb-16 items-end">
+            <RankCard
+              rank={2}
+              name={podium[1].name}
+              accuracy={podium[1].accuracy}
+              points={podium[1].points}
+              champion={false}
+              className="mt-8"
+            />
+            <RankCard
+              rank={1}
+              name={podium[0].name}
+              accuracy={podium[0].accuracy}
+              points={podium[0].points}
+              champion={true}
+              className="mt-0"
+            />
+            <RankCard
+              rank={3}
+              name={podium[2].name}
+              accuracy={podium[2].accuracy}
+              points={podium[2].points}
+              champion={false}
+              className="mt-12"
+            />
           </div>
 
           {/* TABLE */}
@@ -63,31 +114,35 @@ export default function Leaderboard() {
                     <th className="px-6 py-4 text-right">Score</th>
                   </tr>
                 </thead>
-
                 <tbody>
-                  {[
-                    { r: 4, n: "Marcus Holloway", a: "95%", t: "12m 45s", s: "12,400" },
-                    { r: 42, n: "You (AlphaUser)", a: "82%", t: "14m 20s", s: "8,240", highlight: true },
-                    { r: 43, n: "Elena Rodriguez", a: "79%", t: "13m 55s", s: "8,195" },
-                    { r: 44, n: "Kenji Sato", a: "76%", t: "15m 10s", s: "7,880" }
-                  ].map((u, i) => (
-                    <tr
-                      key={i}
-                      className={`border-t border-white/10 transition duration-300 ${
-                        u.highlight
-                          ? "bg-primary/20 text-white font-semibold"
-                          : "hover:bg-white/5"
-                      }`}
-                    >
-                      <td className="px-6 py-4 font-bold">{u.r}</td>
-                      <td className="px-6 py-4">{u.n}</td>
-                      <td className="px-6 py-4">{u.a}</td>
-                      <td className="px-6 py-4">{u.t}</td>
-                      <td className="px-6 py-4 text-right font-bold text-primary">
-                        {u.s}
+                  {loading ? (
+                    <tr>
+                      <td colSpan="5" className="text-center py-8 text-white/40">
+                        Loading...
                       </td>
                     </tr>
-                  ))}
+                  ) : topUsers.length <= 3 ? (
+                    <tr>
+                      <td colSpan="5" className="text-center py-8 text-white/40">
+                        No other users yet
+                      </td>
+                    </tr>
+                  ) : (
+                    topUsers.slice(3).map((u, i) => (
+                      <tr
+                        key={i}
+                        className="border-t border-white/10 hover:bg-white/5 transition duration-300"
+                      >
+                        <td className="px-6 py-4 font-bold">{u.rank}</td>
+                        <td className="px-6 py-4">{u.name}</td>
+                        <td className="px-6 py-4">{u.accuracy}</td>
+                        <td className="px-6 py-4">{u.time}</td>
+                        <td className="px-6 py-4 text-right font-bold text-primary">
+                          {u.points}
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -109,29 +164,12 @@ export default function Leaderboard() {
 }
 
 /* ================= RANK CARD ================= */
-
-function RankCard({ rank, name, accuracy, points, champion }) {
+function RankCard({ rank, name, accuracy, points, champion, className }) {
   const styles = {
-    1: {
-      bg: "from-[#2c2f1f] to-[#1a1c14]",
-      border: "border-yellow-500",
-      text: "text-yellow-400",
-      badge: "👑"
-    },
-    2: {
-      bg: "from-[#2a2a2a] to-[#1c1c1c]",
-      border: "border-gray-400",
-      text: "text-gray-300",
-      badge: "🥈"
-    },
-    3: {
-      bg: "from-[#2a1f1a] to-[#1c1410]",
-      border: "border-orange-500",
-      text: "text-orange-400",
-      badge: "🥉"
-    }
+    1: { bg: "from-[#2c2f1f] to-[#1a1c14]", border: "border-yellow-500", text: "text-yellow-400", badge: "👑" },
+    2: { bg: "from-[#2a2a2a] to-[#1c1c1c]", border: "border-gray-400", text: "text-gray-300", badge: "🥈" },
+    3: { bg: "from-[#2a1f1a] to-[#1c1410]", border: "border-orange-500", text: "text-orange-400", badge: "🥉" },
   };
-
   const current = styles[rank];
 
   return (
@@ -140,26 +178,15 @@ function RankCard({ rank, name, accuracy, points, champion }) {
       transition={{ duration: 0.3 }}
       className={`relative rounded-2xl p-8 text-center border shadow-xl transition
         bg-gradient-to-br ${current.bg} ${current.border}
-        ${champion ? "scale-110 shadow-yellow-500/30" : ""}
+        ${champion ? "scale-110 shadow-yellow-500/30" : ""} ${className || ""}
       `}
     >
-      <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-3xl">
-        {current.badge}
-      </div>
-
-      <p className="text-sm uppercase tracking-widest text-white/60 mb-2">
-        Rank #{rank}
-      </p>
-
+      <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-3xl">{current.badge}</div>
+      <p className="text-sm uppercase tracking-widest text-white/60 mb-2">Rank #{rank}</p>
       <h3 className="text-xl font-bold">{name}</h3>
-
-      <p className="text-sm text-white/50 mt-1">
-        {accuracy} Accuracy
-      </p>
-
+      <p className="text-sm text-white/50 mt-1">{accuracy} Accuracy</p>
       <div className={`mt-6 text-3xl font-black ${current.text}`}>
-        {points}
-        <span className="text-sm text-white/40 ml-1">PTS</span>
+        {points} <span className="text-sm text-white/40 ml-1">PTS</span>
       </div>
     </motion.div>
   );

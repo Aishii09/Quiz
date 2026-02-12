@@ -1,5 +1,8 @@
 import Navbar from "../components/Navbar";
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import axios from "axios";
+
 
 export default function Home() {
   // Get user data
@@ -8,6 +11,16 @@ export default function Home() {
   // Get progress data (can be updated after quizzes)
   const progress = localStorage.getItem("weeklyProgress") || 85;
   const remaining = localStorage.getItem("remainingQuizzes") || 2;
+  useEffect(() => {
+  axios.get("http://localhost:5000")
+    .then(res => {
+      console.log("Connected:", res.data);
+    })
+    .catch(err => {
+      console.log("Error:", err);
+    });
+}, []);
+
 
   return (
     <div className="bg-background-dark text-white min-h-screen font-display">

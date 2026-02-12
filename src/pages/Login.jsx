@@ -1,4 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import axios from "axios";
 import {
   auth,
   googleProvider,
@@ -9,16 +11,26 @@ import {
 export default function Login() {
   const navigate = useNavigate();
 
-  // ✅ AFTER LOGIN SUCCESS (COMMON FUNCTION)
-  const saveUserAndRedirect = (user) => {
+  // ✅ STATE FOR EMAIL & PASSWORD
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  // ✅ SAVE USER (COMMON FUNCTION)
+  const saveUserAndRedirect = (user, token = null) => {
     localStorage.setItem(
       "user",
       JSON.stringify({
-        name: user.displayName || "User",
+        name: user.name || user.displayName || "User",
         email: user.email,
-        avatar: user.photoURL || "https://i.pravatar.cc/150",
+        avatar:
+          user.photoURL ||
+          "https://i.pravatar.cc/150",
       })
     );
+
+    if (token) {
+      localStorage.setItem("token", token);
+    }
 
     navigate("/home");
   };
@@ -43,22 +55,31 @@ export default function Login() {
     }
   };
 
-  // ✅ NORMAL LOGIN (DUMMY FOR NOW)
-  const handleLogin = (e) => {
+  // ✅ BACKEND LOGIN (REAL LOGIN)
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    // ⚠️ Replace with real auth later
-    saveUserAndRedirect({
-      displayName: "Aishi",
-      email: "aishi@example.com",
-      photoURL: "https://i.pravatar.cc/150?img=5",
-    });
+    try {
+      const res = await axios.post(
+        "http://127.0.0.1:5000/api/auth/login",
+        { email, password }
+      );
+
+      console.log("Login Success:", res.data);
+
+      saveUserAndRedirect(res.data.user, res.data.token);
+
+      alert("Login successful!");
+
+    } catch (error) {
+      console.error(error.response?.data || error.message);
+      alert(error.response?.data?.message || "Login failed");
+    }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0b1e] to-[#050614] text-white flex flex-col">
-      
-      {/* HEADER (ONLY FOR LANDING / LOGIN) */}
+
       <header className="flex items-center justify-between px-10 py-5 border-b border-white/10">
         <h1 className="text-xl font-bold flex items-center gap-2">
           <span className="text-blue-500">⬤</span> Quiz Master
@@ -71,7 +92,6 @@ export default function Login() {
         </nav>
       </header>
 
-      {/* LOGIN CARD */}
       <div className="flex flex-1 items-center justify-center">
         <form
           onSubmit={handleLogin}
@@ -92,6 +112,8 @@ export default function Login() {
           <input
             type="email"
             required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             placeholder="Enter your email"
             className="w-full mb-4 px-4 py-3 rounded-lg bg-black/40 border border-white/10 outline-none focus:border-blue-500"
           />
@@ -106,17 +128,17 @@ export default function Login() {
           <input
             type="password"
             required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             placeholder="Enter your password"
             className="w-full mb-4 px-4 py-3 rounded-lg bg-black/40 border border-white/10 outline-none focus:border-blue-500"
           />
 
-          {/* REMEMBER */}
           <div className="flex items-center gap-2 text-sm text-white/60 mb-6">
             <input type="checkbox" />
             Remember me for 30 days
           </div>
 
-          {/* LOGIN BUTTON */}
           <button
             type="submit"
             className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 font-bold mb-4"
@@ -124,12 +146,10 @@ export default function Login() {
             Login
           </button>
 
-          {/* DIVIDER */}
           <div className="text-center text-white/40 text-xs mb-4">
             OR CONTINUE WITH
           </div>
 
-          {/* OAUTH */}
           <div className="flex gap-4">
             <button
               type="button"
@@ -148,7 +168,6 @@ export default function Login() {
             </button>
           </div>
 
-          {/* REGISTER */}
           <p className="text-white/50 text-sm mt-6 text-center">
             Not registered yet?{" "}
             <Link to="/register" className="text-primary font-semibold">
@@ -158,7 +177,6 @@ export default function Login() {
         </form>
       </div>
 
-      {/* FOOTER */}
       <footer className="text-center text-white/30 text-xs py-4 border-t border-white/10">
         © 2024 Quiz Master Platform. Designed for Excellence.
       </footer>

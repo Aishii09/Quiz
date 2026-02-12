@@ -1,6 +1,40 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import axios from "axios";
 
 export default function Register() {
+  const navigate = useNavigate();
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/register",
+        { name, email, password }
+      );
+
+      console.log("Register Success:", res.data);
+      alert("Registration successful!");
+
+      navigate("/login");
+
+    } catch (err) {
+      console.log("Register Error:", err.response?.data || err.message);
+      alert(err.response?.data?.message || "Registration failed");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0b1e] to-[#050614] text-white flex flex-col">
       
@@ -31,49 +65,67 @@ export default function Register() {
             </p>
           </div>
 
-          {/* Name */}
-          <label className="text-sm mb-1 block">Full Name</label>
-          <input
-            type="text"
-            placeholder="Enter your full name"
-            className="w-full mb-4 px-4 py-3 rounded-lg bg-black/40 border border-white/10 outline-none focus:border-blue-500"
-          />
+          <form onSubmit={handleRegister}>
 
-          {/* Email */}
-          <label className="text-sm mb-1 block">Email address</label>
-          <input
-            type="email"
-            placeholder="Enter your email"
-            className="w-full mb-4 px-4 py-3 rounded-lg bg-black/40 border border-white/10 outline-none focus:border-blue-500"
-          />
+            {/* Name */}
+            <label className="text-sm mb-1 block">Full Name</label>
+            <input
+              type="text"
+              placeholder="Enter your full name"
+              className="w-full mb-4 px-4 py-3 rounded-lg bg-black/40 border border-white/10 outline-none focus:border-blue-500"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
 
-          {/* Password */}
-          <label className="text-sm mb-1 block">Password</label>
-          <input
-            type="password"
-            placeholder="Enter your password"
-            className="w-full mb-4 px-4 py-3 rounded-lg bg-black/40 border border-white/10 outline-none focus:border-blue-500"
-          />
+            {/* Email */}
+            <label className="text-sm mb-1 block">Email address</label>
+            <input
+              type="email"
+              placeholder="Enter your email"
+              className="w-full mb-4 px-4 py-3 rounded-lg bg-black/40 border border-white/10 outline-none focus:border-blue-500"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
 
-          {/* Confirm Password */}
-          <label className="text-sm mb-1 block">Confirm Password</label>
-          <input
-            type="password"
-            placeholder="Confirm your password"
-            className="w-full mb-6 px-4 py-3 rounded-lg bg-black/40 border border-white/10 outline-none focus:border-blue-500"
-          />
+            {/* Password */}
+            <label className="text-sm mb-1 block">Password</label>
+            <input
+              type="password"
+              placeholder="Enter your password"
+              className="w-full mb-4 px-4 py-3 rounded-lg bg-black/40 border border-white/10 outline-none focus:border-blue-500"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
 
-          {/* Register Button */}
-          <button className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 font-bold mb-4">
-            Register
-          </button>
+            {/* Confirm Password */}
+            <label className="text-sm mb-1 block">Confirm Password</label>
+            <input
+              type="password"
+              placeholder="Confirm your password"
+              className="w-full mb-6 px-4 py-3 rounded-lg bg-black/40 border border-white/10 outline-none focus:border-blue-500"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
+
+            {/* Register Button */}
+            <button
+              type="submit"
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 font-bold mb-4"
+            >
+              Register
+            </button>
+
+          </form>
 
           {/* Divider */}
           <div className="text-center text-white/40 text-xs mb-4">
             OR CONTINUE WITH
           </div>
 
-          {/* OAuth */}
           <div className="flex gap-4">
             <button className="flex-1 py-3 rounded-lg border border-white/10">
               Google
@@ -83,17 +135,16 @@ export default function Register() {
             </button>
           </div>
 
-          {/* Login */}
           <p className="text-white/50 text-sm mt-6">
             Already registered?{" "}
-            <Link to="/login" className="text-primary font-semibold">
+            <Link to="/login" className="text-blue-500 font-semibold">
               Login here
             </Link>
           </p>
+
         </div>
       </div>
 
-      {/* Footer */}
       <footer className="text-center text-white/30 text-xs py-4 border-t border-white/10">
         © 2024 Quiz Master Platform. Designed for Excellence.
       </footer>
