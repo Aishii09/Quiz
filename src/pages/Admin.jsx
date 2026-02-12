@@ -1,138 +1,218 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import {
+  Home,
+  FileText,
+  BarChart3,
+  Trophy,
+  Zap,
+} from "lucide-react";
 
 export default function Admin() {
-  const [activeTab, setActiveTab] = useState("add");
+  const [selectedExam, setSelectedExam] = useState("");
+  const [subjects, setSubjects] = useState([]);
 
-  return (
-    <div className="min-h-screen bg-[#070B1F] text-white flex">
+  const handleExamChange = (exam) => {
+    setSelectedExam(exam);
 
-      {/* SIDEBAR */}
-      <div className="w-64 bg-[#0D1228] p-6 border-r border-white/10">
-        <h2 className="text-2xl font-bold mb-10">Admin Panel</h2>
-
-        <div className="space-y-4">
-          <button
-            onClick={() => setActiveTab("add")}
-            className={`block w-full text-left p-3 rounded-xl ${
-              activeTab === "add"
-                ? "bg-gradient-to-r from-blue-600 to-purple-600"
-                : "hover:bg-white/10"
-            }`}
-          >
-            Add Question
-          </button>
-
-          <button
-            onClick={() => setActiveTab("view")}
-            className={`block w-full text-left p-3 rounded-xl ${
-              activeTab === "view"
-                ? "bg-gradient-to-r from-blue-600 to-purple-600"
-                : "hover:bg-white/10"
-            }`}
-          >
-            View Questions
-          </button>
-
-          <button
-            onClick={() => setActiveTab("stats")}
-            className={`block w-full text-left p-3 rounded-xl ${
-              activeTab === "stats"
-                ? "bg-gradient-to-r from-blue-600 to-purple-600"
-                : "hover:bg-white/10"
-            }`}
-          >
-            Stats
-          </button>
-        </div>
-      </div>
-
-      {/* MAIN CONTENT */}
-      <div className="flex-1 p-10">
-        {activeTab === "add" && <AddQuestion />}
-        {activeTab === "view" && <ViewQuestions />}
-        {activeTab === "stats" && <Stats />}
-      </div>
-    </div>
-  );
-}
-
-/* ================= ADD QUESTION ================= */
-
-function AddQuestion() {
-  const [question, setQuestion] = useState("");
-  const [exam, setExam] = useState("NEET");
-
-  const handleSubmit = () => {
-    alert("Question saved (backend later)");
+    if (exam === "CET") {
+      setSubjects(["Physics", "Chemistry", "Mathematics", "Biology"]);
+    } else if (exam === "NEET") {
+      setSubjects(["Physics", "Chemistry", "Biology"]);
+    } else if (exam === "JEE") {
+      setSubjects(["Physics", "Chemistry", "Mathematics"]);
+    } else {
+      setSubjects([]);
+    }
   };
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-6">Add Question</h1>
+    <div
+      className="flex min-h-screen text-white"
+      style={{
+        background: "linear-gradient(135deg, #071b1b 0%, #0d2f2f 100%)",
+      }}
+    >
+      {/* SIDEBAR */}
+      <div className="w-64 bg-[#081f1f] border-r border-[#123737] p-6 flex flex-col justify-between">
+        <div>
+          <h1 className="text-xl font-bold mb-8">
+            Quiz Master <br />
+            <span className="text-[#20e3e3] text-sm">ADMIN PANEL</span>
+          </h1>
 
-      <select
-        value={exam}
-        onChange={(e) => setExam(e.target.value)}
-        className="mb-4 p-3 rounded bg-[#0D1228] border border-white/20"
-      >
-        <option>NEET</option>
-        <option>CET</option>
-        <option>JEE</option>
-      </select>
-
-      <textarea
-        placeholder="Enter Question"
-        value={question}
-        onChange={(e) => setQuestion(e.target.value)}
-        className="w-full p-4 rounded bg-[#0D1228] border border-white/20 mb-4"
-      />
-
-      <button
-        onClick={handleSubmit}
-        className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600"
-      >
-        Save Question
-      </button>
-    </div>
-  );
-}
-
-/* ================= VIEW QUESTIONS ================= */
-
-function ViewQuestions() {
-  return (
-    <div>
-      <h1 className="text-3xl font-bold mb-6">All Questions</h1>
-      <p className="text-white/50">
-        Questions will appear here after backend connection.
-      </p>
-    </div>
-  );
-}
-
-/* ================= STATS ================= */
-
-function Stats() {
-  return (
-    <div>
-      <h1 className="text-3xl font-bold mb-6">Platform Stats</h1>
-
-      <div className="grid grid-cols-3 gap-6">
-        <div className="bg-white/5 p-6 rounded-2xl">
-          <h2>Total Users</h2>
-          <p className="text-3xl font-bold mt-2">0</p>
+          <nav className="space-y-4">
+            <SidebarItem icon={<Home size={18} />} text="Dashboard" />
+            <SidebarItem icon={<FileText size={18} />} text="Exams" active />
+            <SidebarItem icon={<BarChart3 size={18} />} text="Results" />
+            <SidebarItem icon={<Trophy size={18} />} text="Leaderboard" />
+          </nav>
         </div>
 
-        <div className="bg-white/5 p-6 rounded-2xl">
-          <h2>Total Questions</h2>
-          <p className="text-3xl font-bold mt-2">0</p>
-        </div>
-
-        <div className="bg-white/5 p-6 rounded-2xl">
-          <h2>Active Exams</h2>
-          <p className="text-3xl font-bold mt-2">3</p>
+        <div className="bg-[#0f2a2a] p-3 rounded-xl border border-[#1e4d4d]">
+          <p className="text-sm font-semibold">Admin</p>
+          <p className="text-xs text-[#20e3e3]">Profile</p>
         </div>
       </div>
+
+      {/* MAIN */}
+      <div className="flex-1 p-10">
+
+        {/* STATS */}
+        <div className="grid grid-cols-4 gap-6 mb-10">
+          <StatCard title="TOTAL EXAMS" value="3" change="+0%" />
+          <StatCard title="ACTIVE STUDENTS" value="45,200" change="+5%" />
+          <StatCard title="AVG SCORE" value="72.4%" change="-2%" />
+          <StatCard title="AI QUESTIONS" value="12,402" change="+24%" />
+        </div>
+
+        {/* GRID */}
+        <div className="grid grid-cols-2 gap-8">
+
+          {/* MCQ GENERATOR (BIGGER) */}
+          <div className="bg-[#0f2a2a] p-10 rounded-3xl border border-[#1e4d4d] min-h-[600px]">
+            <h3 className="text-2xl font-semibold mb-8 flex items-center gap-3">
+              <Zap size={22} className="text-[#20e3e3]" />
+              Auto MCQ Generator
+            </h3>
+
+            {/* EXAM */}
+            <div className="mb-6">
+              <label className="text-sm text-gray-400 block mb-2">
+                Select Exam Type
+              </label>
+              <select
+                value={selectedExam}
+                onChange={(e) => handleExamChange(e.target.value)}
+                className="w-full bg-[#0b1f1f] border border-[#1e4d4d] rounded-xl p-4 outline-none focus:border-[#20e3e3]"
+              >
+                <option value="">Choose Exam</option>
+                <option value="CET">CET</option>
+                <option value="NEET">NEET</option>
+                <option value="JEE">JEE</option>
+              </select>
+            </div>
+
+            {/* SUBJECT */}
+            {subjects.length > 0 && (
+              <div className="mb-6">
+                <label className="text-sm text-gray-400 block mb-2">
+                  Select Subject
+                </label>
+                <select className="w-full bg-[#0b1f1f] border border-[#1e4d4d] rounded-xl p-4 outline-none focus:border-[#20e3e3]">
+                  <option value="">Choose Subject</option>
+                  {subjects.map((subject, index) => (
+                    <option key={index} value={subject}>
+                      {subject}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* FILE */}
+            <div className="mb-6">
+              <label className="text-sm text-gray-400 block mb-2">
+                Upload Question Paper (PDF)
+              </label>
+              <input
+                type="file"
+                accept=".pdf"
+                className="w-full bg-[#0b1f1f] border border-[#1e4d4d] rounded-xl p-4"
+              />
+            </div>
+
+            {/* OPTIONS */}
+            <div className="flex gap-6 mb-8">
+              <select className="bg-[#0b1f1f] border border-[#1e4d4d] rounded-xl p-4 flex-1">
+                <option>10 Questions</option>
+                <option>20 Questions</option>
+                <option>30 Questions</option>
+              </select>
+
+              <select className="bg-[#0b1f1f] border border-[#1e4d4d] rounded-xl p-4 flex-1">
+                <option>Competitive (Advanced)</option>
+                <option>Medium</option>
+                <option>Easy</option>
+              </select>
+            </div>
+
+            <button className="w-full bg-[#20e3e3] hover:bg-[#18cfcf] text-black py-4 rounded-xl font-semibold text-lg transition duration-300">
+              GENERATE MCQs NOW
+            </button>
+          </div>
+
+          {/* RECENT RESULTS */}
+          <div className="bg-[#0f2a2a] p-8 rounded-3xl border border-[#1e4d4d]">
+            <h3 className="text-xl font-semibold mb-6">
+              Recent Quiz Results
+            </h3>
+
+            <div className="space-y-5 text-sm">
+              <ResultRow
+                title="JEE Examination"
+                candidates="4,281"
+                status="LIVE"
+                score="9.4"
+              />
+              <ResultRow
+                title="CET Examination"
+                candidates="3,120"
+                status="SCHEDULED"
+                score="8.7"
+              />
+              <ResultRow
+                title="NEET Examination"
+                candidates="6,540"
+                status="COMPLETED"
+                score="9.1"
+              />
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* COMPONENTS */
+
+function SidebarItem({ icon, text, active }) {
+  return (
+    <div
+      className={`flex items-center gap-3 px-3 py-3 rounded-lg cursor-pointer transition ${
+        active
+          ? "bg-[#0e3b3b] border border-[#20e3e3] shadow-[0_0_12px_rgba(32,227,227,0.4)]"
+          : "hover:bg-[#123737]"
+      }`}
+    >
+      {icon}
+      <span>{text}</span>
+    </div>
+  );
+}
+
+function StatCard({ title, value, change }) {
+  return (
+    <div className="bg-[#0f2a2a] p-6 rounded-2xl border border-[#1e4d4d]">
+      <p className="text-xs text-gray-400">{title}</p>
+      <div className="flex justify-between items-center mt-3">
+        <h2 className="text-3xl font-bold">{value}</h2>
+        <span className="text-[#20e3e3] text-sm">{change}</span>
+      </div>
+    </div>
+  );
+}
+
+function ResultRow({ title, candidates, status, score }) {
+  return (
+    <div className="flex justify-between items-center bg-[#0b1f1f] p-4 rounded-xl border border-[#123737]">
+      <div>
+        <p className="font-medium">{title}</p>
+        <p className="text-gray-400 text-xs">{candidates} Candidates</p>
+      </div>
+      <div className="text-[#20e3e3] text-sm">{status}</div>
+      <div className="font-semibold">{score}</div>
     </div>
   );
 }
