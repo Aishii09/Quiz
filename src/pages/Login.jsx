@@ -61,7 +61,7 @@ export default function Login() {
 
     try {
       const res = await axios.post(
-        "http://127.0.0.1:5000/api/auth/login",
+        "https://quiz-backend-w5cm.onrender.com",
         { email, password }
       );
 
