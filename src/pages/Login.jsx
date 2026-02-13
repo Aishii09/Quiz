@@ -8,23 +8,22 @@ import {
   signInWithPopup,
 } from "../firebase";
 
-export default function Login() {
+// ✅ Accept setCurrentUser as a prop
+export default function Login({ setCurrentUser }) {
   const navigate = useNavigate();
 
-  // ✅ STATE FOR EMAIL & PASSWORD
+  // STATE FOR EMAIL & PASSWORD
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // ✅ SAVE USER (COMMON FUNCTION)
+  // SAVE USER AND REDIRECT
   const saveUserAndRedirect = (user, token = null) => {
     localStorage.setItem(
       "user",
       JSON.stringify({
         name: user.name || user.displayName || "User",
         email: user.email,
-        avatar:
-          user.photoURL ||
-          "https://i.pravatar.cc/150",
+        avatar: user.photoURL || "https://i.pravatar.cc/150",
       })
     );
 
@@ -32,10 +31,13 @@ export default function Login() {
       localStorage.setItem("token", token);
     }
 
+    // ✅ Update global state if available
+    if (setCurrentUser) setCurrentUser(user);
+
     navigate("/home");
   };
 
-  // ✅ GOOGLE LOGIN
+  // GOOGLE LOGIN
   const handleGoogleLogin = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
@@ -45,7 +47,7 @@ export default function Login() {
     }
   };
 
-  // ✅ GITHUB LOGIN
+  // GITHUB LOGIN
   const handleGithubLogin = async () => {
     try {
       const result = await signInWithPopup(auth, githubProvider);
@@ -55,37 +57,36 @@ export default function Login() {
     }
   };
 
-  // ✅ BACKEND LOGIN (REAL LOGIN)
+  // BACKEND LOGIN
   const handleLogin = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    // ✅ Clear previous user info first
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
+    try {
+      // Clear old user info
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
 
-    const res = await axios.post(
-      "https://quiz-backend-w5cm.onrender.com/api/auth/login",
-      { email, password }
-    );
+      const res = await axios.post(
+        "https://quiz-backend-w5cm.onrender.com/api/auth/login",
+        { email, password }
+      );
 
-    console.log("Login Success:", res.data);
+      console.log("Login Success:", res.data);
 
-    // ✅ Save new user info and token
-    localStorage.setItem("user", JSON.stringify(res.data.user));
-    localStorage.setItem("token", res.data.token);
+      // Save new user info and token
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+      localStorage.setItem("token", res.data.token);
 
-    // ✅ Update state if using setCurrentUser
-    if (setCurrentUser) setCurrentUser(res.data.user);
+      // ✅ Update global state if using setCurrentUser
+      if (setCurrentUser) setCurrentUser(res.data.user);
 
-    alert("Login successful!");
-    navigate("/home");
-
-  } catch (error) {
-    console.error(error.response?.data || error.message);
-    alert(error.response?.data?.message || "Login failed");
-  }
-};
+      alert("Login successful!");
+      navigate("/home");
+    } catch (error) {
+      console.error(error.response?.data || error.message);
+      alert(error.response?.data?.message || "Login failed");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0b1e] to-[#050614] text-white flex flex-col">
@@ -158,7 +159,7 @@ export default function Login() {
 
           <div className="text-center text-white/40 text-xs mb-4">
             OR CONTINUE WITH
-          </div> 
+          </div>
 
           <div className="flex gap-4">
             <button

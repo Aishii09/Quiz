@@ -1,5 +1,5 @@
+import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -13,75 +13,29 @@ import DemoHome from "./pages/DemoHome";
 import DemoSubjects from "./pages/DemoSubjects";
 import DemoQuiz from "./pages/DemoQuiz";
 import DemoResult from "./pages/DemoResult";
-
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
+  const [currentUser, setCurrentUser] = useState(null); // ✅ inside component
+
   return (
     <Router>
       <Routes>
 
         {/* PUBLIC ROUTES */}
         <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login setCurrentUser={setCurrentUser} />} />
+        <Route path="/register" element={<Register setCurrentUser={setCurrentUser} />} />
 
         {/* PROTECTED ROUTES */}
-        <Route
-          path="/home"
-          element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/home" element={<ProtectedRoute currentUser={currentUser}><Home /></ProtectedRoute>} />
+        <Route path="/quizzes" element={<ProtectedRoute currentUser={currentUser}><Quizzes /></ProtectedRoute>} />
+        <Route path="/results" element={<ProtectedRoute currentUser={currentUser}><Results /></ProtectedRoute>} />
+        <Route path="/leaderboard" element={<ProtectedRoute currentUser={currentUser}><Leaderboard /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute currentUser={currentUser}><Profile /></ProtectedRoute>} />
+        <Route path="/bookmarks" element={<ProtectedRoute currentUser={currentUser}><Bookmarks /></ProtectedRoute>} />
 
-        <Route
-          path="/quizzes"
-          element={
-            <ProtectedRoute>
-              <Quizzes />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/results"
-          element={
-            <ProtectedRoute>
-              <Results />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/leaderboard"
-          element={
-            <ProtectedRoute>
-              <Leaderboard />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/bookmarks"
-          element={
-            <ProtectedRoute>
-              <Bookmarks />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* DEMO ROUTES (Optional - keep public if needed) */}
+        {/* DEMO ROUTES */}
         <Route path="/demo" element={<DemoHome />} />
         <Route path="/demo/:exam" element={<DemoSubjects />} />
         <Route path="/demo/:exam/:subject" element={<DemoQuiz />} />
