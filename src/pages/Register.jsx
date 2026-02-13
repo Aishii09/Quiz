@@ -11,29 +11,33 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleRegister = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (password !== confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    }
+  if (password !== confirmPassword) {
+    alert("Passwords do not match");
+    return;
+  }
 
-    try {
-      const res = await axios.post(
-        "https://quiz-backend-w5cm.onrender.com/api/auth/register",
-        { name, email, password }
-      );
+  try {
+    const res = await axios.post(
+      "https://quiz-backend-w5cm.onrender.com/api/auth/register",
+      { name, email, password }
+    );
 
-      console.log("Register Success:", res.data);
-      alert("Registration successful!");
+    console.log("Register Success:", res.data);
 
-      navigate("/login");
+    // ✅ Save user immediately so new user can log in
+    localStorage.setItem("user", JSON.stringify(res.data.user));
+    localStorage.setItem("token", res.data.token);
 
-    } catch (err) {
-      console.log("Register Error:", err.response?.data || err.message);
-      alert(err.response?.data?.message || "Registration failed");
-    }
-  };
+    alert("Registration successful!");
+
+    navigate("/home"); // <- navigate to home instead of login
+  } catch (err) {
+    console.log("Register Error:", err.response?.data || err.message);
+    alert(err.response?.data?.message || "Registration failed");
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0b1e] to-[#050614] text-white flex flex-col">

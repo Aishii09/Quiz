@@ -57,25 +57,35 @@ export default function Login() {
 
   // ✅ BACKEND LOGIN (REAL LOGIN)
   const handleLogin = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const res = await axios.post(
-        "https://quiz-backend-w5cm.onrender.com/api/auth/login",
-        { email, password }
-      );
+  try {
+    // ✅ Clear previous user info first
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
 
-      console.log("Login Success:", res.data);
+    const res = await axios.post(
+      "https://quiz-backend-w5cm.onrender.com/api/auth/login",
+      { email, password }
+    );
 
-      saveUserAndRedirect(res.data.user, res.data.token);
+    console.log("Login Success:", res.data);
 
-      alert("Login successful!");
+    // ✅ Save new user info and token
+    localStorage.setItem("user", JSON.stringify(res.data.user));
+    localStorage.setItem("token", res.data.token);
 
-    } catch (error) {
-      console.error(error.response?.data || error.message);
-      alert(error.response?.data?.message || "Login failed");
-    }
-  };
+    // ✅ Update state if using setCurrentUser
+    if (setCurrentUser) setCurrentUser(res.data.user);
+
+    alert("Login successful!");
+    navigate("/home");
+
+  } catch (error) {
+    console.error(error.response?.data || error.message);
+    alert(error.response?.data?.message || "Login failed");
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0b1e] to-[#050614] text-white flex flex-col">
@@ -148,7 +158,7 @@ export default function Login() {
 
           <div className="text-center text-white/40 text-xs mb-4">
             OR CONTINUE WITH
-          </div>
+          </div> 
 
           <div className="flex gap-4">
             <button
