@@ -20,7 +20,7 @@ export default function Register() {
 
     try {
       const res = await axios.post(
-        "https://quiz-backend-w5cm.onrender.com",
+        "https://quiz-backend-w5cm.onrender.com/api/auth/register",
         { name, email, password }
       );
 
