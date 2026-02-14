@@ -1,12 +1,14 @@
 import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export default function Results() {
   const [quizHistory, setQuizHistory] = useState([]);
+  const navigate = useNavigate();
 
-  // Replace this with logged-in user's ID from your auth
   const studentId = localStorage.getItem("studentId");
+  const studentName = localStorage.getItem("studentName");
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -27,18 +29,38 @@ export default function Results() {
     return "Needs Improvement ⚡";
   };
 
+  const handleCertificate = () => {
+  const attemptToUse = quizHistory[0];
+
+  if (!attemptToUse) {
+    alert("You must complete a quiz before generating a certificate.");
+    return;
+  }
+
+  navigate("/certificate", {
+    state: {
+      name: studentName || "Student",
+      subject: attemptToUse.quiz?.title,
+      percentage: attemptToUse.score + "%",
+      date: new Date(
+        attemptToUse.completedAt || attemptToUse.createdAt
+      ).toLocaleDateString(),
+    },
+  });
+};
+
+  const latestScore = quizHistory[0]?.score ?? 0;
+
   return (
     <div className="bg-background-dark text-white min-h-screen font-display">
-      {/* SAME HEADER AS LANDING */}
       <Navbar />
 
-      {/* MAIN */}
       <main className="flex justify-center py-20 px-4">
         <div className="max-w-[1000px] w-full">
           <div className="text-center mb-12">
             <h1 className="text-[42px] font-bold">Test Completed</h1>
             <p className="text-white/60 text-lg">
-              Advanced Physics Mastery - Batch A-102
+              {quizHistory[0]?.quiz?.title || "Quiz Summary"}
             </p>
           </div>
 
@@ -46,16 +68,10 @@ export default function Results() {
           <div className="flex justify-center mb-6">
             <div className="relative size-64 flex items-center justify-center">
               <div className="absolute inset-0 rounded-full border-[12px] border-white/10" />
-              <div
-                className="absolute inset-0 rounded-full border-[12px] border-primary"
-                style={{
-                  clipPath:
-                    "polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, 35% 0%)",
-                }}
-              />
+              <div className="absolute inset-0 rounded-full border-[12px] border-primary" />
               <div className="z-10 text-center">
                 <p className="text-6xl font-bold">
-                  {quizHistory[0]?.score || 0}%
+                  {latestScore}%
                 </p>
                 <p className="text-primary text-sm uppercase tracking-widest">
                   Overall Score
@@ -67,13 +83,16 @@ export default function Results() {
           {/* PERFORMANCE BADGE */}
           <div className="text-center mb-10">
             <span className="inline-block px-6 py-2 rounded-full bg-primary/20 text-primary font-bold">
-              {getBadge(quizHistory[0]?.score || 0)}
+              {getBadge(latestScore)}
             </span>
           </div>
 
-          {/* BUTTON */}
-          <div className="flex justify-center mb-12">
-            <button className="px-8 py-3 bg-primary text-background-dark font-bold rounded-full hover:scale-105 transition">
+          {/* GENERATE CERTIFICATE BUTTON */}
+          <div className="flex justify-center mb-10">
+            <button
+              onClick={handleCertificate}
+              className="px-8 py-3 bg-primary text-background-dark font-bold rounded-full hover:scale-105 transition"
+            >
               Generate Certificate
             </button>
           </div>
@@ -86,22 +105,28 @@ export default function Results() {
                 {quizHistory[0]?.percentile || "N/A"}
               </span>
             </div>
+
             <div className="h-2 bg-white/10 rounded">
               <div
                 className="h-2 bg-primary rounded"
-                style={{ width: quizHistory[0]?.percentile || "0%" }}
+                style={{
+                  width: quizHistory[0]?.percentile || "0%",
+                }}
               />
             </div>
+
             <p className="text-xs italic text-center text-white/50 mt-2">
               {quizHistory[0]
-                ? `You are in the top ${100 - parseInt(quizHistory[0].percentile || 0)}% performers 🔥`
+                ? `You are in the top ${
+                    100 - parseInt(quizHistory[0].percentile || 0)
+                  }% performers 🔥`
                 : "You haven’t attempted any quiz yet"}
             </p>
           </div>
         </div>
       </main>
 
-      {/* ================= QUIZ HISTORY ================= */}
+      {/* QUIZ HISTORY */}
       <div className="mt-16 mx-auto max-w-[1000px] bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
         <h2 className="text-xl font-bold px-6 py-4 border-b border-white/10">
           Previous Quiz Attempts
@@ -136,22 +161,23 @@ export default function Results() {
                     <td className="px-6 py-4">
                       {new Date(item.createdAt).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 font-bold">{item.quiz.title}</td>
+                    <td className="px-6 py-4 font-bold">
+                      {item.quiz?.title}
+                    </td>
                     <td className="px-6 py-4">
                       {new Date(item.createdAt).toLocaleTimeString()}
                     </td>
                     <td className="px-6 py-4">
-                      {new Date(item.completedAt || item.createdAt).toLocaleTimeString()}
+                      {new Date(
+                        item.completedAt || item.createdAt
+                      ).toLocaleTimeString()}
                     </td>
                     <td className="px-6 py-4 text-right font-bold text-primary">
                       {item.score}%
                     </td>
                     <td className="px-6 py-4 text-center">
                       <button
-                        onClick={() => {
-                          localStorage.setItem("selectedAttempt", JSON.stringify(item));
-                          window.location.href = "/review";
-                        }}
+                        onClick={() => navigate("/review", { state: item })}
                         className="px-4 py-1.5 rounded-full text-sm font-bold text-blue-400 border border-blue-400/40 hover:bg-blue-400 hover:text-background-dark transition"
                       >
                         View
@@ -165,9 +191,8 @@ export default function Results() {
         </div>
       </div>
 
-      {/* SAME FOOTER STYLE AS LANDING */}
       <footer className="border-t border-white/10 py-8 text-center text-white/40 mt-16">
-        © 2024 Quiz Master. All rights reserved.
+        © 2026 Quiz Master. All rights reserved.
       </footer>
     </div>
   );

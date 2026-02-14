@@ -14,6 +14,7 @@ import DemoSubjects from "./pages/DemoSubjects";
 import DemoQuiz from "./pages/DemoQuiz";
 import DemoResult from "./pages/DemoResult";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Certificate from "./pages/Certificate";
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null); // ✅ inside component
@@ -34,7 +35,14 @@ function App() {
         <Route path="/leaderboard" element={<ProtectedRoute currentUser={currentUser}><Leaderboard /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute currentUser={currentUser}><Profile /></ProtectedRoute>} />
         <Route path="/bookmarks" element={<ProtectedRoute currentUser={currentUser}><Bookmarks /></ProtectedRoute>} />
-
+<Route
+  path="/certificate"
+  element={
+    <ProtectedRoute>
+      <Certificate />
+    </ProtectedRoute>
+  }
+/>
         {/* DEMO ROUTES */}
         <Route path="/demo" element={<DemoHome />} />
         <Route path="/demo/:exam" element={<DemoSubjects />} />
