@@ -1,40 +1,54 @@
 import Navbar from "../components/Navbar";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+
+import axios from "axios";
 
 export default function Profile() {
-  const navigate = useNavigate();  
+  const navigate = useNavigate();
 
-  // temporary dummy data (later replace with backend)
-  const user = {
-    name: "Aishi",
-    email: "aishi@gmail.com",
-    exam: "NEET",
-    rank: 42,
-    accuracy: "82%",
-    totalTests: 18,
-    bookmarked: 24,
+  const [user, setUser] = useState(null);
+  const [activity, setActivity] = useState([]);
+
+  // Fetch user info and activity from localStorage/backend
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (storedUser) {
+      setUser(storedUser);
+      fetchUserActivity(storedUser.email);
+    } else {
+      navigate("/login"); // redirect if not logged in
+    }
+  }, [navigate]);
+
+  const fetchUserActivity = async (email) => {
+    try {
+      const res = await axios.get(
+        `https://quiz-backend-w5cm.onrender.com/api/attempt/activity/${email}`
+      );
+      setActivity(res.data.activities || []);
+    } catch (err) {
+      console.error("Failed to fetch activity:", err);
+    }
   };
 
   const handleLogout = () => {
-    // clear stored user/session data
     localStorage.removeItem("user");
     localStorage.removeItem("token");
-
-    // optional: clear other app data if needed
-    // localStorage.clear();
-
+    setUser(null);
     navigate("/login");
   };
 
+  if (!user) return null; // loading state
+
   return (
     <div className="bg-background-dark text-white min-h-screen font-display">
-      {/* SAME HEADER AS LANDING */}
+      {/* Navbar */}
       <Navbar showAuth />
 
-      {/* ================= PROFILE HEADER ================= */}
+      {/* PROFILE HEADER */}
       <section className="pt-20 pb-16 px-6">
         <div className="max-w-[1000px] mx-auto flex flex-col md:flex-row gap-8 items-center justify-between">
-
           <div className="flex flex-col md:flex-row gap-8 items-center">
             {/* AVATAR */}
             <div className="size-32 rounded-full bg-gradient-to-br from-primary to-accent-purple flex items-center justify-center text-5xl font-black">
@@ -46,7 +60,7 @@ export default function Profile() {
               <h1 className="text-4xl font-black">{user.name}</h1>
               <p className="text-white/50">{user.email}</p>
               <span className="inline-block mt-3 px-4 py-1 rounded-full bg-primary/20 text-primary font-bold text-sm">
-                Preparing for {user.exam}
+                Preparing for {user.exam || "Your Exam"}
               </span>
             </div>
           </div>
@@ -61,22 +75,21 @@ export default function Profile() {
         </div>
       </section>
 
-      {/* ================= STATS ================= */}
+      {/* STATS */}
       <section className="max-w-[1000px] mx-auto px-6 mb-20">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          <StatCard title="Global Rank" value={`#${user.rank}`} />
-          <StatCard title="Accuracy" value={user.accuracy} />
-          <StatCard title="Tests Taken" value={user.totalTests} />
-          <StatCard title="Bookmarks" value={user.bookmarked} />
+          <StatCard title="Global Rank" value={`#${user.rank || "-"}`} />
+          <StatCard title="Accuracy" value={user.accuracy || "-"} />
+          <StatCard title="Tests Taken" value={user.totalTests || 0} />
+          <StatCard title="Bookmarks" value={user.bookmarked || 0} />
         </div>
       </section>
 
-      {/* ================= QUICK ACTIONS ================= */}
+      {/* QUICK ACTIONS */}
       <section className="max-w-[1000px] mx-auto px-6 mb-24">
         <h3 className="text-sm font-bold uppercase tracking-wider text-white/40 mb-6">
           Quick Actions
         </h3>
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Link
             to="/results"
@@ -113,20 +126,24 @@ export default function Profile() {
         </div>
       </section>
 
-      {/* ================= RECENT ACTIVITY ================= */}
+      {/* RECENT ACTIVITY */}
       <section className="max-w-[1000px] mx-auto px-6 mb-24">
         <h3 className="text-sm font-bold uppercase tracking-wider text-white/40 mb-6">
           Recent Activity
         </h3>
 
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
-          <Activity text="Completed NEET Physics Mock Test" time="2 hours ago" />
-          <Activity text="Bookmarked 5 Biology questions" time="Yesterday" />
-          <Activity text="Achieved 82% accuracy in CET quiz" time="2 days ago" />
+          {activity.length > 0 ? (
+            activity.map((act, index) => (
+              <Activity key={index} text={act.text} time={act.time} />
+            ))
+          ) : (
+            <p className="text-white/50 text-sm">No recent activity yet.</p>
+          )}
         </div>
       </section>
 
-      {/* SAME FOOTER AS LANDING */}
+      {/* FOOTER */}
       <footer className="border-t border-white/10 py-8 text-center text-white/40">
         © 2024 Quiz Master. All rights reserved.
       </footer>
@@ -135,7 +152,6 @@ export default function Profile() {
 }
 
 /* ================= COMPONENTS ================= */
-
 function StatCard({ title, value }) {
   return (
     <div className="glass-card p-6 rounded-2xl text-center">
