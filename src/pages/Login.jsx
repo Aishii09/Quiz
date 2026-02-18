@@ -1,196 +1,110 @@
-import { Link, useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import {
-  auth,
-  googleProvider,
-  githubProvider,
-  signInWithPopup,
-} from "../firebase";
 
-// ✅ Accept setCurrentUser as a prop
 export default function Login({ setCurrentUser }) {
-  const navigate = useNavigate();
-
-  // STATE FOR EMAIL & PASSWORD
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
 
-  // SAVE USER AND REDIRECT
-  const saveUserAndRedirect = (user, token = null) => {
-    localStorage.setItem(
-      "user",
-      JSON.stringify({
-        name: user.name || user.displayName || "User",
-        email: user.email,
-        avatar: user.photoURL || "https://i.pravatar.cc/150",
-      })
-    );
+  const navigate = useNavigate();
 
-    if (token) {
-      localStorage.setItem("token", token);
-    }
-
-    // ✅ Update global state if available
-    if (setCurrentUser) setCurrentUser(user);
-
-    navigate("/home");
-  };
-
-  // GOOGLE LOGIN
-  const handleGoogleLogin = async () => {
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      saveUserAndRedirect(result.user);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  // GITHUB LOGIN
-  const handleGithubLogin = async () => {
-    try {
-      const result = await signInWithPopup(auth, githubProvider);
-      saveUserAndRedirect(result.user);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  // BACKEND LOGIN
   const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
-      // Clear old user info
-      localStorage.removeItem("user");
-      localStorage.removeItem("token");
-
       const res = await axios.post(
         "https://quiz-backend-w5cm.onrender.com/api/auth/login",
         { email, password }
       );
 
-      console.log("Login Success:", res.data);
-
-      // Save new user info and token
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+      // Save token & user info
       localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      // ✅ Update global state if using setCurrentUser
+      // Update currentUser in App.jsx
       if (setCurrentUser) setCurrentUser(res.data.user);
 
-      alert("Login successful!");
-      navigate("/home");
-    } catch (error) {
-      console.error(error.response?.data || error.message);
-      alert(error.response?.data?.message || "Login failed");
+      setIsSuccess(true);
+      setMessage("Login Successful ✅");
+
+      // Redirect after 1 second
+      setTimeout(() => {
+        navigate("/home");
+      }, 1000);
+
+    } catch (err) {
+      setIsSuccess(false);
+      setMessage("Invalid email or password ❌");
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0b1e] to-[#050614] text-white flex flex-col">
+    <div className="bg-background-dark text-white min-h-screen font-display">
+      <Navbar showAuth />
 
-      <header className="flex items-center justify-between px-10 py-5 border-b border-white/10">
-        <h1 className="text-xl font-bold flex items-center gap-2">
-          <span className="text-blue-500">⬤</span> Quiz Master
-        </h1>
-        <nav className="flex items-center gap-8 text-sm text-white/70">
-          <Link to="/">Home</Link>
-          <Link to="/quizzes">Quizzes</Link>
-          <Link to="/results">Results</Link>
-          <Link to="/leaderboard">Leaderboard</Link>
-        </nav>
-      </header>
+      <div className="flex items-center justify-center py-20 px-6">
+        <div className="glass-card p-10 rounded-3xl w-full max-w-md">
+          <h2 className="text-3xl font-bold text-center mb-6">
+            Login to Continue
+          </h2>
 
-      <div className="flex flex-1 items-center justify-center">
-        <form
-          onSubmit={handleLogin}
-          className="w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8"
-        >
-          <div className="flex flex-col items-center mb-6">
-            <div className="w-14 h-14 rounded-xl bg-blue-600/20 flex items-center justify-center mb-4">
-              🛡️
+          <form onSubmit={handleLogin} className="flex flex-col gap-4">
+            <input
+              type="email"
+              placeholder="Email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none"
+            />
+
+            <input
+              type="password"
+              placeholder="Password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none"
+            />
+
+            <div className="text-right">
+              <Link
+                to="/forgot-password"
+                className="text-sm text-primary hover:underline"
+              >
+                Forgot Password?
+              </Link>
             </div>
-            <h2 className="text-2xl font-bold">Quiz Master</h2>
-            <p className="text-white/50 text-sm mt-1">
-              Enter your credentials to access the dashboard.
-            </p>
-          </div>
-
-          {/* EMAIL */}
-          <label className="text-sm mb-1 block">Email address</label>
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your email"
-            className="w-full mb-4 px-4 py-3 rounded-lg bg-black/40 border border-white/10 outline-none focus:border-blue-500"
-          />
-
-          {/* PASSWORD */}
-          <div className="flex justify-between items-center">
-            <label className="text-sm mb-1 block">Password</label>
-            <Link className="text-blue-500 text-xs" to="/forgot-password">
-              Forgot?
-            </Link>
-          </div>
-          <input
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter your password"
-            className="w-full mb-4 px-4 py-3 rounded-lg bg-black/40 border border-white/10 outline-none focus:border-blue-500"
-          />
-
-          <div className="flex items-center gap-2 text-sm text-white/60 mb-6">
-            <input type="checkbox" />
-            Remember me for 30 days
-          </div>
-
-          <button
-            type="submit"
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 font-bold mb-4"
-          >
-            Login
-          </button>
-
-          <div className="text-center text-white/40 text-xs mb-4">
-            OR CONTINUE WITH
-          </div>
-
-          <div className="flex gap-4">
-            <button
-              type="button"
-              onClick={handleGoogleLogin}
-              className="flex-1 py-3 rounded-lg border border-white/10"
-            >
-              Google
-            </button>
 
             <button
-              type="button"
-              onClick={handleGithubLogin}
-              className="flex-1 py-3 rounded-lg border border-white/10"
+              type="submit"
+              className="rounded-xl h-12 bg-gradient-to-r from-primary to-accent-purple font-bold mt-2 hover:opacity-90 transition"
             >
-              GitHub
+              Login
             </button>
-          </div>
 
-          <p className="text-white/50 text-sm mt-6 text-center">
-            Not registered yet?{" "}
+            {message && (
+              <p
+                className={`text-center mt-3 font-medium ${
+                  isSuccess ? "text-green-400" : "text-red-400"
+                }`}
+              >
+                {message}
+              </p>
+            )}
+          </form>
+
+          <p className="text-sm text-center text-white/50 mt-6">
+            Don’t have an account?{" "}
             <Link to="/register" className="text-primary font-semibold">
-              Join the competition
+              Register
             </Link>
           </p>
-        </form>
+        </div>
       </div>
-
-      <footer className="text-center text-white/30 text-xs py-4 border-t border-white/10">
-        © 2024 Quiz Master Platform. Designed for Excellence.
-      </footer>
     </div>
   );
 }

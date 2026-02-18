@@ -12,7 +12,8 @@ export default function Home() {
   const progress = localStorage.getItem("weeklyProgress") || 85;
   const remaining = localStorage.getItem("remainingQuizzes") || 2;
   useEffect(() => {
-  axios.get("http://localhost:5000")
+  axios.get("https://quiz-backend-w5cm.onrender.com/")
+
     .then(res => {
       console.log("Connected:", res.data);
     })
