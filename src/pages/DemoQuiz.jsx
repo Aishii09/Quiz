@@ -2,22 +2,42 @@ import { useParams, useNavigate } from "react-router-dom";
 import { demoQuestions } from "../data/demoQuestions";
 import { useState, useEffect } from "react";
 import Timer from "../components/Timer";
+import axios from "axios"; // ✅ ADDED
 
 export default function DemoQuiz() {
-  const { quizId } = useParams(); // 👈 ONE param
+  const { examType, subject, quizId } = useParams(); // ✅ updated
   const navigate = useNavigate();
 
-  const questions = demoQuestions[quizId] || [];
+  // ✅ decide key (fallback support)
+  const quizKey = quizId || `${examType?.toLowerCase()}-${subject?.toLowerCase()}`;
+
+  const [backendExam, setBackendExam] = useState(null); // ✅ ADDED
+  const [questions, setQuestions] = useState(demoQuestions[quizKey] || []); // ✅ modified
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(60);
 
+  /* ================= FETCH FROM BACKEND ================= */
+  useEffect(() => {
+    if (examType && subject) {
+      axios
+        .get(`http://localhost:5000/api/admin/exams/${examType}/${subject}`)
+        .then((res) => {
+          setBackendExam(res.data);
+          // ⚡ Later you will generate MCQs from PDF here
+        })
+        .catch(() => {
+          console.log("No backend exam found, using demo questions.");
+        });
+    }
+  }, [examType, subject]);
+
   useEffect(() => {
     if (timeLeft <= 0) {
-      navigate(`/result/${quizId}`, { state: { score } });
+      navigate(`/result/${quizKey}`, { state: { score } });
     }
-  }, [timeLeft, navigate, quizId, score]);
+  }, [timeLeft, navigate, quizKey, score]);
 
   const handleAnswer = (isCorrect) => {
     if (isCorrect) setScore((prev) => prev + 1);
@@ -27,7 +47,7 @@ export default function DemoQuiz() {
       setCurrentQuestionIndex(nextIndex);
       setTimeLeft(60);
     } else {
-      navigate(`/result/${quizId}`, { state: { score } });
+      navigate(`/result/${quizKey}`, { state: { score } });
     }
   };
 
@@ -35,6 +55,11 @@ export default function DemoQuiz() {
     return (
       <div className="p-6 text-center text-white">
         <h1 className="text-2xl font-bold">No questions found for this quiz.</h1>
+        {backendExam && (
+          <p className="mt-4 text-green-400">
+            Backend exam found: {backendExam.examType} - {backendExam.subject}
+          </p>
+        )}
       </div>
     );
   }
@@ -44,13 +69,15 @@ export default function DemoQuiz() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-900 to-blue-700 p-6 text-white flex flex-col items-center">
       <h1 className="text-3xl font-bold mb-4">
-        {quizId.toUpperCase()} Quiz
+        {(quizId || `${examType} ${subject}`).toUpperCase()} Quiz
       </h1>
 
       <Timer
         timeLeft={timeLeft}
         setTimeLeft={setTimeLeft}
-        onTimeUp={() => navigate(`/result/${quizId}`, { state: { score } })}
+        onTimeUp={() =>
+          navigate(`/result/${quizKey}`, { state: { score } })
+        }
       />
 
       <div className="mt-6 w-full max-w-xl bg-white/10 p-6 rounded-lg shadow-lg">

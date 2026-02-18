@@ -11,12 +11,14 @@ import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
 import Bookmarks from "./pages/Bookmarks";
 
-// DEMO
-import DemoHome from "./pages/DemoHome";
-import DemoQuiz from "./pages/DemoQuiz";
+// ✅ REAL QUIZ PAGE (NEW)
+import QuizPage from "./pages/QuizPage";
 import DemoResult from "./pages/DemoResult";
 
-// ADMIN (ONLY THIS)
+// DEMO HOME
+import DemoHome from "./pages/DemoHome";
+
+// ADMIN
 import Admin from "./pages/Admin";
 
 function App() {
@@ -41,8 +43,10 @@ function App() {
 
         {/* DEMO */}
         <Route path="/demo" element={<DemoHome />} />
-        <Route path="/quiz/:quizId" element={<DemoQuiz />} />
-        <Route path="/result/:quizId" element={<DemoResult />} />
+
+        {/* ✅ REAL QUIZ ROUTE */}
+        <Route path="/quiz/:examType/:subject" element={<QuizPage />} />
+        <Route path="/result/:examType/:subject" element={<DemoResult />} />
 
         {/* ADMIN */}
         <Route path="/admin" element={<Admin />} />

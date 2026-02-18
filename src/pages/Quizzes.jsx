@@ -30,22 +30,24 @@ export default function Quizzes() {
 
   const [activeIndex, setActiveIndex] = useState(0);
 
-  /* ================= ROTATE EVERY 15 SECONDS ================= */
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % quotes.length);
     }, 15000);
 
     return () => clearInterval(interval);
-  }, [quotes.length]); // ✅ added quotes.length to satisfy ESLint
+  }, [quotes.length]);
 
   /* ================= SAVE LAST QUIZ ================= */
-  const startQuiz = (quizId) => {
+  const startQuiz = (quizId, subject = null) => {
     localStorage.setItem(
       "lastQuiz",
       JSON.stringify({
         quizId,
-        route: `/quiz/${quizId}`,
+        subject,
+        route: subject
+          ? `/quiz/${quizId}/${subject}`
+          : `/quiz/${quizId}`,
       })
     );
   };
@@ -55,7 +57,6 @@ export default function Quizzes() {
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-6 lg:px-10 py-20">
-        {/* TITLE */}
         <div className="mb-10">
           <h1 className="text-4xl lg:text-5xl font-bold mb-4">Quiz Master</h1>
           <p className="text-slate-400 max-w-2xl">
@@ -63,14 +64,12 @@ export default function Quizzes() {
           </p>
         </div>
 
-        {/* ================= FEATURED MOTIVATION ================= */}
         <div className="mb-14">
           <div className="relative rounded-2xl overflow-hidden bg-[#1c2127] shadow-2xl border border-white/10">
             <div className="relative grid md:grid-cols-2 gap-10 p-10 items-center">
               <div className="relative hidden md:flex items-center justify-center">
                 <div className="absolute w-72 h-72 rounded-full border border-blue-500/20 animate-spin-slow" />
                 <div className="absolute w-48 h-48 rounded-full border border-white/10" />
-
                 <div className="w-20 h-20 rounded-2xl bg-white/5 flex items-center justify-center border border-white/20 backdrop-blur">
                   <span
                     className={`material-symbols-outlined text-4xl ${visuals[activeIndex].color}`}
@@ -100,11 +99,11 @@ export default function Quizzes() {
           </div>
         </div>
 
-        {/* ================= ALL QUIZZES ================= */}
         <div>
           <h2 className="text-2xl font-bold mb-6">All Competitive Exams</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
             {/* JEE */}
             <div className="bg-[#1c2127] rounded-xl p-6 border border-white/5 flex flex-col justify-between">
               <div>
@@ -112,23 +111,18 @@ export default function Quizzes() {
                   engineering
                 </span>
                 <h3 className="text-xl font-bold mt-4">JEE Main & Advanced</h3>
-                <p className="text-slate-400 text-sm mt-2">IIT & NIT entrance preparation.</p>
-              </div>
-              <div className="flex gap-3 mt-6">
-                <Link
-                  to="/quiz/jee1"
-                  onClick={() => startQuiz("jee1")}
-                  className="flex-1 bg-primary h-10 rounded-lg font-bold flex items-center justify-center"
-                >
-                  Attend
-                </Link>
-                <Link
-                  to="/quiz/jee1"
-                  onClick={() => startQuiz("jee1")}
-                  className="flex-1 bg-teal-accent/20 border border-teal-accent/30 text-teal-accent h-10 rounded-lg font-bold flex items-center justify-center"
-                >
-                  Practice
-                </Link>
+                <div className="flex gap-2 mt-4 flex-wrap">
+                  {["Physics", "Chemistry", "Maths"].map((sub) => (
+                    <Link
+                      key={sub}
+                      to={`/quiz/JEE/${sub}`}
+                      onClick={() => startQuiz("JEE", sub)}
+                      className="px-3 py-1 text-xs rounded-full bg-primary/20 border border-primary/40 text-primary hover:bg-primary/30 transition"
+                    >
+                      {sub}
+                    </Link>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -139,50 +133,43 @@ export default function Quizzes() {
                   medical_services
                 </span>
                 <h3 className="text-xl font-bold mt-4">NEET (UG)</h3>
-                <p className="text-slate-400 text-sm mt-2">Medical entrance preparation.</p>
-              </div>
-              <div className="flex gap-3 mt-6">
-                <Link
-                  to="/quiz/neet1"
-                  onClick={() => startQuiz("neet1")}
-                  className="flex-1 bg-primary h-10 rounded-lg font-bold flex items-center justify-center"
-                >
-                  Attend
-                </Link>
-                <Link
-                  to="/quiz/neet1"
-                  onClick={() => startQuiz("neet1")}
-                  className="flex-1 bg-teal-accent/20 border border-teal-accent/30 text-teal-accent h-10 rounded-lg font-bold flex items-center justify-center"
-                >
-                  Practice
-                </Link>
+                <div className="flex gap-2 mt-4 flex-wrap">
+                  {["Physics", "Chemistry", "Biology"].map((sub) => (
+                    <Link
+                      key={sub}
+                      to={`/quiz/NEET/${sub}`}
+                      onClick={() => startQuiz("NEET", sub)}
+                      className="px-3 py-1 text-xs rounded-full bg-teal-accent/20 border border-teal-accent/30 text-teal-accent hover:bg-teal-accent/30 transition"
+                    >
+                      {sub}
+                    </Link>
+                  ))}
+                </div>
               </div>
             </div>
 
             {/* CET */}
             <div className="bg-[#1c2127] rounded-xl p-6 border border-white/5 flex flex-col justify-between">
               <div>
-                <span className="material-symbols-outlined text-primary text-4xl">school</span>
+                <span className="material-symbols-outlined text-primary text-4xl">
+                  school
+                </span>
                 <h3 className="text-xl font-bold mt-4">CET</h3>
-                <p className="text-slate-400 text-sm mt-2">Karnataka CET preparation.</p>
-              </div>
-              <div className="flex gap-3 mt-6">
-                <Link
-                  to="/quiz/cet1"
-                  onClick={() => startQuiz("cet1")}
-                  className="flex-1 bg-primary h-10 rounded-lg font-bold flex items-center justify-center"
-                >
-                  Attend
-                </Link>
-                <Link
-                  to="/quiz/cet1"
-                  onClick={() => startQuiz("cet1")}
-                  className="flex-1 bg-teal-accent/20 border border-teal-accent/30 text-teal-accent h-10 rounded-lg font-bold flex items-center justify-center"
-                >
-                  Practice
-                </Link>
+                <div className="flex gap-2 mt-4 flex-wrap">
+                  {["Physics", "Chemistry", "Maths", "Biology"].map((sub) => (
+                    <Link
+                      key={sub}
+                      to={`/quiz/CET/${sub}`}
+                      onClick={() => startQuiz("CET", sub)}
+                      className="px-3 py-1 text-xs rounded-full bg-primary/20 border border-primary/40 text-primary hover:bg-primary/30 transition"
+                    >
+                      {sub}
+                    </Link>
+                  ))}
+                </div>
               </div>
             </div>
+
           </div>
         </div>
       </main>

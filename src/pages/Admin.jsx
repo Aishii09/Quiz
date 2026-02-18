@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import {
   Home,
   FileText,
@@ -10,9 +11,12 @@ import {
 export default function Admin() {
   const [selectedExam, setSelectedExam] = useState("");
   const [subjects, setSubjects] = useState([]);
+  const [selectedSubject, setSelectedSubject] = useState("");
+  const [file, setFile] = useState(null);
 
   const handleExamChange = (exam) => {
     setSelectedExam(exam);
+    setSelectedSubject("");
 
     if (exam === "CET") {
       setSubjects(["Physics", "Chemistry", "Mathematics", "Biology"]);
@@ -22,6 +26,30 @@ export default function Admin() {
       setSubjects(["Physics", "Chemistry", "Mathematics"]);
     } else {
       setSubjects([]);
+    }
+  };
+
+  const handleGenerate = async () => {
+    if (!selectedExam || !selectedSubject || !file) {
+      alert("Please fill all fields");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("examType", selectedExam);
+    formData.append("subject", selectedSubject);
+    formData.append("file", file);
+
+    try {
+      await axios.post(
+        "http://localhost:5000/api/admin/upload-exam",
+        formData
+      );
+
+      alert("MCQs Generated Successfully 🚀");
+    } catch (error) {
+      console.error(error);
+      alert("Upload Failed ❌");
     }
   };
 
@@ -56,7 +84,6 @@ export default function Admin() {
 
       {/* MAIN */}
       <div className="flex-1 p-10">
-
         {/* STATS */}
         <div className="grid grid-cols-4 gap-6 mb-10">
           <StatCard title="TOTAL EXAMS" value="3" change="+0%" />
@@ -65,10 +92,8 @@ export default function Admin() {
           <StatCard title="AI QUESTIONS" value="12,402" change="+24%" />
         </div>
 
-        {/* GRID */}
         <div className="grid grid-cols-2 gap-8">
-
-          {/* MCQ GENERATOR (BIGGER) */}
+          {/* MCQ GENERATOR */}
           <div className="bg-[#0f2a2a] p-10 rounded-3xl border border-[#1e4d4d] min-h-[600px]">
             <h3 className="text-2xl font-semibold mb-8 flex items-center gap-3">
               <Zap size={22} className="text-[#20e3e3]" />
@@ -98,7 +123,11 @@ export default function Admin() {
                 <label className="text-sm text-gray-400 block mb-2">
                   Select Subject
                 </label>
-                <select className="w-full bg-[#0b1f1f] border border-[#1e4d4d] rounded-xl p-4 outline-none focus:border-[#20e3e3]">
+                <select
+                  value={selectedSubject}
+                  onChange={(e) => setSelectedSubject(e.target.value)}
+                  className="w-full bg-[#0b1f1f] border border-[#1e4d4d] rounded-xl p-4 outline-none focus:border-[#20e3e3]"
+                >
                   <option value="">Choose Subject</option>
                   {subjects.map((subject, index) => (
                     <option key={index} value={subject}>
@@ -117,26 +146,15 @@ export default function Admin() {
               <input
                 type="file"
                 accept=".pdf"
+                onChange={(e) => setFile(e.target.files[0])}
                 className="w-full bg-[#0b1f1f] border border-[#1e4d4d] rounded-xl p-4"
               />
             </div>
 
-            {/* OPTIONS */}
-            <div className="flex gap-6 mb-8">
-              <select className="bg-[#0b1f1f] border border-[#1e4d4d] rounded-xl p-4 flex-1">
-                <option>10 Questions</option>
-                <option>20 Questions</option>
-                <option>30 Questions</option>
-              </select>
-
-              <select className="bg-[#0b1f1f] border border-[#1e4d4d] rounded-xl p-4 flex-1">
-                <option>Competitive (Advanced)</option>
-                <option>Medium</option>
-                <option>Easy</option>
-              </select>
-            </div>
-
-            <button className="w-full bg-[#20e3e3] hover:bg-[#18cfcf] text-black py-4 rounded-xl font-semibold text-lg transition duration-300">
+            <button
+              onClick={handleGenerate}
+              className="w-full bg-[#20e3e3] hover:bg-[#18cfcf] text-black py-4 rounded-xl font-semibold text-lg transition duration-300"
+            >
               GENERATE MCQs NOW
             </button>
           </div>
@@ -168,7 +186,6 @@ export default function Admin() {
               />
             </div>
           </div>
-
         </div>
       </div>
     </div>
