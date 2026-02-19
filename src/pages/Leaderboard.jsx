@@ -11,7 +11,7 @@ export default function Leaderboard() {
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
-        const res = await axios.get("/api/attempt/leaderboard"); // your backend endpoint
+        const res = await axios.get("https://your-backend-name.onrender.com/api/attempt/leaderboard"); // your backend endpoint
         setTopUsers(res.data || []);
       } catch (err) {
         console.log("Error fetching leaderboard:", err);
