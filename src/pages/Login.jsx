@@ -28,12 +28,10 @@ export default function Login({ setCurrentUser }) {
       if (setCurrentUser) setCurrentUser(res.data.user);
 
       setIsSuccess(true);
-      setMessage("Login Successful ✅");
+setMessage("Login Successful ✅");
 
-      // Redirect after 1 second
-      setTimeout(() => {
-        navigate("/home");
-      }, 1000);
+navigate("/home");
+
 
     } catch (err) {
       setIsSuccess(false);
