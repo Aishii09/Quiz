@@ -19,14 +19,16 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import ProtectedRoute from "./components/ProtectedRoute";
 
+
 function App() {
-  // ✅ Keep track of logged-in user
+  // Track logged-in user
   const [currentUser, setCurrentUser] = useState(null);
 
-  // ✅ On app load, check if user is already logged in
+  // Check if user already logged in
   useEffect(() => {
     const token = localStorage.getItem("token");
     const user = localStorage.getItem("user");
+
     if (token && user) {
       setCurrentUser(JSON.parse(user));
     }
@@ -34,6 +36,8 @@ function App() {
 
   return (
     <Router>
+    
+
       <Routes>
 
         {/* PUBLIC ROUTES */}
@@ -44,7 +48,6 @@ function App() {
         <Route path="/reset-password/:token" element={<ResetPassword />} />
 
         {/* PROTECTED ROUTES */}
-       
         <Route
           path="/profile"
           element={
@@ -53,60 +56,60 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
-  path="/home"
-  element={
-    <ProtectedRoute currentUser={currentUser}>
-      <Home currentUser={currentUser} />
-    </ProtectedRoute>
-  }
-/>
+          path="/home"
+          element={
+            <ProtectedRoute currentUser={currentUser}>
+              <Home currentUser={currentUser} />
+            </ProtectedRoute>
+          }
+        />
 
-<Route
-  path="/quizzes"
-  element={
-    <ProtectedRoute currentUser={currentUser}>
-      <Quizzes currentUser={currentUser} />
-    </ProtectedRoute>
-  }
-/>
+        <Route
+          path="/quizzes"
+          element={
+            <ProtectedRoute currentUser={currentUser}>
+              <Quizzes currentUser={currentUser} />
+            </ProtectedRoute>
+          }
+        />
 
-<Route
-  path="/results"
-  element={
-    <ProtectedRoute currentUser={currentUser}>
-      <Results currentUser={currentUser} />
-    </ProtectedRoute>
-  }
-/>
+        <Route
+          path="/results"
+          element={
+            <ProtectedRoute currentUser={currentUser}>
+              <Results currentUser={currentUser} />
+            </ProtectedRoute>
+          }
+        />
 
-<Route
-  path="/leaderboard"
-  element={
-    <ProtectedRoute currentUser={currentUser}>
-      <Leaderboard currentUser={currentUser} />
-    </ProtectedRoute>
-  }
-/>
+        <Route
+          path="/leaderboard"
+          element={
+            <ProtectedRoute currentUser={currentUser}>
+              <Leaderboard currentUser={currentUser} />
+            </ProtectedRoute>
+          }
+        />
 
-<Route
-  path="/bookmarks"
-  element={
-    <ProtectedRoute currentUser={currentUser}>
-      <Bookmarks currentUser={currentUser} />
-    </ProtectedRoute>
-  }
-/>
+        <Route
+          path="/bookmarks"
+          element={
+            <ProtectedRoute currentUser={currentUser}>
+              <Bookmarks currentUser={currentUser} />
+            </ProtectedRoute>
+          }
+        />
 
-<Route
-  path="/certificate"
-  element={
-    <ProtectedRoute currentUser={currentUser}>
-      <Certificate currentUser={currentUser} />
-    </ProtectedRoute>
-  }
-/>
-
+        <Route
+          path="/certificate"
+          element={
+            <ProtectedRoute currentUser={currentUser}>
+              <Certificate currentUser={currentUser} />
+            </ProtectedRoute>
+          }
+        />
 
         {/* DEMO ROUTES */}
         <Route path="/demo" element={<DemoHome />} />

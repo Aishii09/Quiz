@@ -1,6 +1,8 @@
 import { Link, NavLink, useLocation } from "react-router-dom";
 
-export default function Navbar({ showAuth = false }) {
+
+
+export default function Navbar({ showAuth = false}) {
   const location = useLocation();
 
   // ❌ hide profile ONLY on landing page
@@ -21,6 +23,7 @@ export default function Navbar({ showAuth = false }) {
 
       {/* NAV LINKS */}
       <div className="hidden md:flex items-center gap-10">
+        
         <nav className="flex gap-8">
           <NavLink to="/home" className="nav-link">Home</NavLink>
           <NavLink to="/quizzes" className="nav-link">Quizzes</NavLink>
@@ -49,6 +52,9 @@ export default function Navbar({ showAuth = false }) {
             </Link>
           </div>
         )}
+
+       
+
       </div>
     </header>
   );
