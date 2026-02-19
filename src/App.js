@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
+
+
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -23,6 +25,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 function App() {
   // Track logged-in user
   const [currentUser, setCurrentUser] = useState(null);
+
+  
 
   // Check if user already logged in
   useEffect(() => {
