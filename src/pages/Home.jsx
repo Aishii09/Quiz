@@ -47,7 +47,7 @@ export default function Home() {
               Welcome back 👋, {user ? user.name : "Guest"}
             </h2>
             <p className="text-sm text-white/60">
-              Ready to conquer your next challenge today?
+              Ready to conquer your challenge today?
             </p>
           </div>
         </div>
