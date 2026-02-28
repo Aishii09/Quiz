@@ -29,7 +29,16 @@ export default function Quizzes() {
   ];
 
   const [activeIndex, setActiveIndex] = useState(0);
+  const [selectedExam, setSelectedExam] = useState(null);
 
+  /* ================= SUBJECT DATA ================= */
+  const examSubjects = {
+    jee: ["Maths", "Physics", "Chemistry"],
+    neet: ["Physics", "Chemistry", "Biology"],
+    cet: ["Physics", "Chemistry", "Maths", "Biology"],
+  };
+
+  /* ================= AUTO ROTATE MOTIVATION ================= */
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % quotes.length);
@@ -39,24 +48,58 @@ export default function Quizzes() {
   }, [quotes.length]);
 
   /* ================= SAVE LAST QUIZ ================= */
-  const startQuiz = (quizId, subject = null) => {
+  const startQuiz = (exam, subject) => {
     localStorage.setItem(
       "lastQuiz",
       JSON.stringify({
-        quizId,
+        exam,
         subject,
-        route: subject
-          ? `/quiz/${quizId}/${subject}`
-          : `/quiz/${quizId}`,
+        route: `/quiz/${exam}/${subject.toLowerCase()}`,
       })
     );
   };
+
+  /* ================= CARD COMPONENT ================= */
+  const renderExamCard = (examKey, title, description, icon, iconColor) => (
+    <div className="bg-[#1c2127] rounded-xl p-6 border border-white/5 flex flex-col justify-between transition hover:border-primary/40">
+      <div>
+        <span className={`material-symbols-outlined ${iconColor} text-4xl`}>
+          {icon}
+        </span>
+        <h3 className="text-xl font-bold mt-4">{title}</h3>
+        <p className="text-slate-400 text-sm mt-2">{description}</p>
+      </div>
+
+      {selectedExam !== examKey ? (
+        <button
+          onClick={() => setSelectedExam(examKey)}
+          className="mt-6 bg-primary h-10 rounded-lg font-bold hover:opacity-90 transition"
+        >
+          Select
+        </button>
+      ) : (
+        <div className="mt-6 space-y-2">
+          {examSubjects[examKey].map((subject) => (
+            <Link
+              key={subject}
+              to={`/quiz/${examKey}/${subject.toLowerCase()}`}
+              onClick={() => startQuiz(examKey, subject)}
+              className="block bg-primary h-10 rounded-lg font-bold flex items-center justify-center hover:opacity-90 transition"
+            >
+              {subject}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div className="bg-background-dark text-white min-h-screen font-display">
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-6 lg:px-10 py-20">
+        {/* ================= TITLE ================= */}
         <div className="mb-10">
           <h1 className="text-4xl lg:text-5xl font-bold mb-4">Quiz Master</h1>
           <p className="text-slate-400 max-w-2xl">
@@ -64,12 +107,15 @@ export default function Quizzes() {
           </p>
         </div>
 
-        <div className="mb-14">
+        {/* ================= MOTIVATION SECTION ================= */}
+        <div className="mb-16">
           <div className="relative rounded-2xl overflow-hidden bg-[#1c2127] shadow-2xl border border-white/10">
             <div className="relative grid md:grid-cols-2 gap-10 p-10 items-center">
+              {/* Left Visual */}
               <div className="relative hidden md:flex items-center justify-center">
                 <div className="absolute w-72 h-72 rounded-full border border-blue-500/20 animate-spin-slow" />
                 <div className="absolute w-48 h-48 rounded-full border border-white/10" />
+
                 <div className="w-20 h-20 rounded-2xl bg-white/5 flex items-center justify-center border border-white/20 backdrop-blur">
                   <span
                     className={`material-symbols-outlined text-4xl ${visuals[activeIndex].color}`}
@@ -79,6 +125,7 @@ export default function Quizzes() {
                 </div>
               </div>
 
+              {/* Right Text */}
               <div>
                 <span className="inline-block mb-4 px-4 py-1 text-xs font-bold tracking-widest rounded-full bg-primary/20 text-primary">
                   PREP MODE ACTIVE
@@ -99,78 +146,33 @@ export default function Quizzes() {
           </div>
         </div>
 
-        <div>
-          <h2 className="text-2xl font-bold mb-6">All Competitive Exams</h2>
+        {/* ================= EXAM SECTION ================= */}
+        <h2 className="text-2xl font-bold mb-6">All Competitive Exams</h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {renderExamCard(
+            "jee",
+            "JEE Main & Advanced",
+            "IIT & NIT entrance preparation.",
+            "engineering",
+            "text-primary"
+          )}
 
-            {/* JEE */}
-            <div className="bg-[#1c2127] rounded-xl p-6 border border-white/5 flex flex-col justify-between">
-              <div>
-                <span className="material-symbols-outlined text-primary text-4xl">
-                  engineering
-                </span>
-                <h3 className="text-xl font-bold mt-4">JEE Main & Advanced</h3>
-                <div className="flex gap-2 mt-4 flex-wrap">
-                  {["Physics", "Chemistry", "Maths"].map((sub) => (
-                    <Link
-                      key={sub}
-                      to={`/quiz/JEE/${sub}`}
-                      onClick={() => startQuiz("JEE", sub)}
-                      className="px-3 py-1 text-xs rounded-full bg-primary/20 border border-primary/40 text-primary hover:bg-primary/30 transition"
-                    >
-                      {sub}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
+          {renderExamCard(
+            "neet",
+            "NEET (UG)",
+            "Medical entrance preparation.",
+            "medical_services",
+            "text-teal-accent"
+          )}
 
-            {/* NEET */}
-            <div className="bg-[#1c2127] rounded-xl p-6 border border-white/5 flex flex-col justify-between">
-              <div>
-                <span className="material-symbols-outlined text-teal-accent text-4xl">
-                  medical_services
-                </span>
-                <h3 className="text-xl font-bold mt-4">NEET (UG)</h3>
-                <div className="flex gap-2 mt-4 flex-wrap">
-                  {["Physics", "Chemistry", "Biology"].map((sub) => (
-                    <Link
-                      key={sub}
-                      to={`/quiz/NEET/${sub}`}
-                      onClick={() => startQuiz("NEET", sub)}
-                      className="px-3 py-1 text-xs rounded-full bg-teal-accent/20 border border-teal-accent/30 text-teal-accent hover:bg-teal-accent/30 transition"
-                    >
-                      {sub}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* CET */}
-            <div className="bg-[#1c2127] rounded-xl p-6 border border-white/5 flex flex-col justify-between">
-              <div>
-                <span className="material-symbols-outlined text-primary text-4xl">
-                  school
-                </span>
-                <h3 className="text-xl font-bold mt-4">CET</h3>
-                <div className="flex gap-2 mt-4 flex-wrap">
-                  {["Physics", "Chemistry", "Maths", "Biology"].map((sub) => (
-                    <Link
-                      key={sub}
-                      to={`/quiz/CET/${sub}`}
-                      onClick={() => startQuiz("CET", sub)}
-                      className="px-3 py-1 text-xs rounded-full bg-primary/20 border border-primary/40 text-primary hover:bg-primary/30 transition"
-                    >
-                      {sub}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-          </div>
+          {renderExamCard(
+            "cet",
+            "CET",
+            "Karnataka CET preparation.",
+            "school",
+            "text-primary"
+          )}
         </div>
       </main>
 

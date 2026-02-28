@@ -1,18 +1,16 @@
 import React, { useState } from "react";
 import axios from "axios";
-import {
-  Home,
-  FileText,
-  BarChart3,
-  Trophy,
-  Zap,
-} from "lucide-react";
+import { Home, FileText, BarChart3, Trophy, Zap } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function Admin() {
+  const navigate = useNavigate();
+
   const [selectedExam, setSelectedExam] = useState("");
   const [subjects, setSubjects] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState("");
   const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleExamChange = (exam) => {
     setSelectedExam(exam);
@@ -41,15 +39,33 @@ export default function Admin() {
     formData.append("file", file);
 
     try {
-      await axios.post(
+      setLoading(true);
+
+      const response = await axios.post(
         "http://localhost:5000/api/admin/upload-exam",
         formData
       );
 
-      alert("MCQs Generated Successfully 🚀");
+      // ✅ SUCCESS CHECK (handles 200, 201 automatically)
+      if (response.status >= 200 && response.status < 300) {
+        alert("MCQs Generated Successfully 🚀");
+
+        setFile(null);
+        setSelectedExam("");
+        setSelectedSubject("");
+        setSubjects([]);
+
+        navigate("/quizzes");
+      } else {
+        alert("Upload Failed ❌");
+      }
     } catch (error) {
-      console.error(error);
-      alert("Upload Failed ❌");
+      console.error("Upload error:", error.response?.data || error.message);
+      alert(
+        error.response?.data?.message || "Upload Failed ❌"
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -69,10 +85,27 @@ export default function Admin() {
           </h1>
 
           <nav className="space-y-4">
-            <SidebarItem icon={<Home size={18} />} text="Dashboard" />
-            <SidebarItem icon={<FileText size={18} />} text="Exams" active />
-            <SidebarItem icon={<BarChart3 size={18} />} text="Results" />
-            <SidebarItem icon={<Trophy size={18} />} text="Leaderboard" />
+            <SidebarItem
+              icon={<Home size={18} />}
+              text="Dashboard"
+              onClick={() => navigate("/admin")}
+            />
+            <SidebarItem
+              icon={<FileText size={18} />}
+              text="Quizzes"
+              active
+              onClick={() => navigate("/quizzes")}
+            />
+            <SidebarItem
+              icon={<BarChart3 size={18} />}
+              text="Results"
+              onClick={() => navigate("/results")}
+            />
+            <SidebarItem
+              icon={<Trophy size={18} />}
+              text="Leaderboard"
+              onClick={() => navigate("/leaderboard")}
+            />
           </nav>
         </div>
 
@@ -84,7 +117,6 @@ export default function Admin() {
 
       {/* MAIN */}
       <div className="flex-1 p-10">
-        {/* STATS */}
         <div className="grid grid-cols-4 gap-6 mb-10">
           <StatCard title="TOTAL EXAMS" value="3" change="+0%" />
           <StatCard title="ACTIVE STUDENTS" value="45,200" change="+5%" />
@@ -153,9 +185,10 @@ export default function Admin() {
 
             <button
               onClick={handleGenerate}
-              className="w-full bg-[#20e3e3] hover:bg-[#18cfcf] text-black py-4 rounded-xl font-semibold text-lg transition duration-300"
+              disabled={loading}
+              className="w-full bg-[#20e3e3] hover:bg-[#18cfcf] text-black py-4 rounded-xl font-semibold text-lg transition duration-300 disabled:opacity-50"
             >
-              GENERATE MCQs NOW
+              {loading ? "Generating..." : "GENERATE MCQs NOW"}
             </button>
           </div>
 
@@ -192,11 +225,10 @@ export default function Admin() {
   );
 }
 
-/* COMPONENTS */
-
-function SidebarItem({ icon, text, active }) {
+function SidebarItem({ icon, text, active, onClick }) {
   return (
     <div
+      onClick={onClick}
       className={`flex items-center gap-3 px-3 py-3 rounded-lg cursor-pointer transition ${
         active
           ? "bg-[#0e3b3b] border border-[#20e3e3] shadow-[0_0_12px_rgba(32,227,227,0.4)]"

@@ -11,11 +11,10 @@ import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
 import Bookmarks from "./pages/Bookmarks";
 
-// ✅ REAL QUIZ PAGE (NEW)
+// QUIZ PAGE
 import QuizPage from "./pages/QuizPage";
-import DemoResult from "./pages/DemoResult";
 
-// DEMO HOME
+// DEMO
 import DemoHome from "./pages/DemoHome";
 
 // ADMIN
@@ -35,7 +34,15 @@ function App() {
 
         {/* USER */}
         <Route path="/home" element={<Home />} />
+
+        {/* QUIZ SELECTION PAGE */}
         <Route path="/quizzes" element={<Quizzes />} />
+
+        {/* ✅ FIXED QUIZ ROUTES */}
+        <Route path="/quiz/:examId/:subject" element={<QuizPage />} />
+        <Route path="/quiz/:examId" element={<QuizPage />} />
+        <Route path="/quiz" element={<QuizPage />} />
+
         <Route path="/results" element={<Results />} />
         <Route path="/leaderboard" element={<Leaderboard />} />
         <Route path="/profile" element={<Profile />} />
@@ -43,10 +50,6 @@ function App() {
 
         {/* DEMO */}
         <Route path="/demo" element={<DemoHome />} />
-
-        {/* ✅ REAL QUIZ ROUTE */}
-        <Route path="/quiz/:examType/:subject" element={<QuizPage />} />
-        <Route path="/result/:examType/:subject" element={<DemoResult />} />
 
         {/* ADMIN */}
         <Route path="/admin" element={<Admin />} />
