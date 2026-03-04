@@ -1,11 +1,25 @@
 import Navbar from "../components/Navbar";
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import axios from "axios";
+
 
 export default function Home() {
   const user = JSON.parse(localStorage.getItem("user"));
 
   const progress = localStorage.getItem("weeklyProgress") || 85;
   const remaining = localStorage.getItem("remainingQuizzes") || 2;
+  useEffect(() => {
+  axios.get("https://quiz-backend-w5cm.onrender.com/")
+
+    .then(res => {
+      console.log("Connected:", res.data);
+    })
+    .catch(err => {
+      console.log("Error:", err);
+    });
+}, []);
+
 
   // ✅ ADD THIS (dummy performance data)
   const performance = {
@@ -36,7 +50,7 @@ export default function Home() {
               Welcome back 👋, {user ? user.name : "Guest"}
             </h2>
             <p className="text-sm text-white/60">
-              Ready to conquer your next challenge today?
+              Ready to conquer your challenge today?
             </p>
           </div>
         </div>

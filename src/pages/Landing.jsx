@@ -18,9 +18,9 @@ export default function Landing() {
       <Navbar showAuth />
 
       {/* ================= HERO ================= */}
-      <section className="relative overflow-hidden pt-20 pb-32 px-6">
+      <section className="relative overflow-hidden pt-16 pb-20 px-6">
         <div className="max-w-[1000px] mx-auto text-center relative z-10">
-          <h1 className="text-5xl md:text-7xl font-black mb-6">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-black mb-6">
             Master Your Future with{" "}
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent-purple">
               Intelligent Practice
@@ -43,7 +43,7 @@ export default function Landing() {
           <div className="flex items-center justify-center gap-4">
             <Link
               to="/register"
-              className="rounded-xl h-14 px-10 bg-white text-background-dark font-bold flex items-center justify-center"
+              className="w-full sm:w-auto rounded-xl h-14 px-10 bg-white text-background-dark font-bold flex items-center justify-center"
             >
               Register
             </Link>
@@ -52,7 +52,7 @@ export default function Landing() {
 
             <Link
               to="/login"
-              className="rounded-xl h-14 px-10 border border-white/20 font-bold flex items-center justify-center"
+              className="w-full sm:w-auto rounded-xl h-14 px-10 border border-white/20 font-bold flex items-center justify-center"
             >
               Login
             </Link>
@@ -107,7 +107,8 @@ export default function Landing() {
 
       {/* ================= PRICING ================= */}
       <section className="max-w-[1200px] mx-auto px-6 py-20">
-        <div className="bg-white/5 border border-white/10 rounded-[3rem] p-12 flex flex-col md:flex-row gap-12">
+        <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 md:p-12 flex flex-col md:flex-row gap-8 md:gap-12">
+
           <div className="flex-1">
             <h2 className="text-4xl font-bold mb-4">Pro Access</h2>
             <p className="text-white/50 mb-6">
@@ -154,7 +155,8 @@ export default function Landing() {
       {/* ================= DEMO MODAL ================= */}
       {showDemo && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
-          <div className="bg-background-dark border border-white/10 rounded-3xl p-8 w-full max-w-md relative">
+          <div className="bg-background-dark border border-white/10 rounded-3xl p-6 w-[90%] max-w-md relative">
+
             <button
               onClick={() => setShowDemo(false)}
               className="absolute top-4 right-4 text-white/40"

@@ -1,124 +1,143 @@
 import { useLocation, useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 export default function DemoResult() {
-  const { state } = useLocation();
+  const location = useLocation();
   const navigate = useNavigate();
 
-  if (!state) {
-    navigate("/"); // Redirect if no state is passed
-    return null;
+  const { questions = [], answers = {} } = location.state || {};
+
+  if (!questions.length) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black text-white">
+        <h1 className="text-2xl font-bold">No result data found!</h1>
+      </div>
+    );
   }
 
-  const { questions, answers, timeUsed } = state;
-
+  // ✅ Calculate Results
   let correct = 0;
   let wrong = 0;
-  let notAnswered = 0;
+  let unattempted = 0;
 
-  // ✅ Calculate results safely, works whether correctAnswer is index or text
-  questions.forEach((q, i) => {
-    const userIndex = answers[i]; // may be undefined
-    if (userIndex === undefined) {
-      notAnswered++;
-      return;
+  questions.forEach((q, index) => {
+    if (answers[index] === undefined) {
+      unattempted++;
+    } else if (q.options[answers[index]] === q.correctAnswer) {
+      correct++;
+    } else {
+      wrong++;
     }
-
-    const userAnswerText = q.options[userIndex]; // convert index to text
-    const correctAnswerText =
-      typeof q.correctAnswer === "number"
-        ? q.options[q.correctAnswer]
-        : q.correctAnswer;
-
-    if (userAnswerText === correctAnswerText) correct++;
-    else wrong++;
   });
 
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0b1e] to-[#050614] text-white p-8 md:p-12">
-      <h1 className="text-4xl md:text-5xl font-extrabold mb-6 text-center">
-        🏆 Your Demo Result
-      </h1>
+    <>
+      <Navbar />
 
-      {/* Summary Card */}
-      <div className="bg-gray-800/60 rounded-2xl p-6 md:p-10 flex flex-col md:flex-row justify-around items-center mb-10 shadow-lg">
-        <div className="text-center mb-4 md:mb-0">
-          <p className="text-xl font-semibold">⏱ Time Taken</p>
-          <p className="text-2xl md:text-3xl font-bold text-primary">{formatTime(timeUsed)}</p>
-        </div>
-        <div className="text-center mb-4 md:mb-0">
-          <p className="text-xl font-semibold">✅ Correct</p>
-          <p className="text-2xl md:text-3xl font-bold text-green-400">{correct}</p>
-        </div>
-        <div className="text-center mb-4 md:mb-0">
-          <p className="text-xl font-semibold">❌ Wrong</p>
-          <p className="text-2xl md:text-3xl font-bold text-red-400">{wrong}</p>
-        </div>
-        <div className="text-center">
-          <p className="text-xl font-semibold">⚠️ Not Answered</p>
-          <p className="text-2xl md:text-3xl font-bold text-yellow-400">{notAnswered}</p>
-        </div>
-      </div>
+      <div className="min-h-screen bg-background-dark text-white px-6 py-16">
+        <div className="max-w-4xl mx-auto">
 
-      {/* Questions Review */}
-      <div className="space-y-6">
-        {questions.map((q, i) => {
-          const userIndex = answers[i];
-          const userAnswerText = userIndex !== undefined ? q.options[userIndex] : "Not Answered";
-          const correctAnswerText =
-            typeof q.correctAnswer === "number"
-              ? q.options[q.correctAnswer]
-              : q.correctAnswer;
+          {/* 🔥 Summary Section */}
+          <div className="glass-card p-8 rounded-2xl shadow-xl mb-10 text-center">
+            <h1 className="text-4xl font-black mb-6">Your Result</h1>
 
-          const isCorrect = userAnswerText === correctAnswerText;
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-lg">
+              <div className="bg-white/10 p-4 rounded-xl">
+                <p>Total</p>
+                <p className="text-2xl font-bold">{questions.length}</p>
+              </div>
 
-          return (
-            <div
-              key={i}
-              className={`p-5 md:p-6 rounded-xl border-l-4 ${
-                userIndex === undefined
-                  ? "border-yellow-400 bg-yellow-500/10"
-                  : isCorrect
-                  ? "border-green-400 bg-green-500/10"
-                  : "border-red-400 bg-red-500/10"
-              } shadow-md hover:scale-[1.02] transition-transform duration-200`}
-            >
-              <h3 className="font-bold mb-2 text-lg md:text-xl">
-                Q{i + 1}. {q.question}
-              </h3>
+              <div className="bg-green-500/20 p-4 rounded-xl">
+                <p>Correct</p>
+                <p className="text-2xl font-bold text-green-400">
+                  {correct}
+                </p>
+              </div>
 
-              <p>
-                <span className="font-semibold">Your Answer:</span> {userAnswerText}
-              </p>
+              <div className="bg-red-500/20 p-4 rounded-xl">
+                <p>Wrong</p>
+                <p className="text-2xl font-bold text-red-400">
+                  {wrong}
+                </p>
+              </div>
 
-              <p className={`mt-1 font-medium ${isCorrect ? "text-green-400" : "text-red-400"}`}>
-                Correct Answer: {correctAnswerText}
-              </p>
+              <div className="bg-yellow-500/20 p-4 rounded-xl">
+                <p>Unattempted</p>
+                <p className="text-2xl font-bold text-yellow-400">
+                  {unattempted}
+                </p>
+              </div>
             </div>
-          );
-        })}
-      </div>
+          </div>
 
-      {/* Buttons */}
-      <div className="flex flex-col md:flex-row justify-center gap-6 mt-10">
-        <button
-          onClick={() => navigate("/")}
-          className="bg-primary px-6 py-3 rounded-lg text-lg font-semibold hover:scale-105 transition-transform duration-200"
-        >
-          Back to Home
-        </button>
-        <button
-          onClick={() => navigate("/demo")}
-          className="bg-yellow-500 px-6 py-3 rounded-lg text-lg font-semibold text-black hover:scale-105 transition-transform duration-200"
-        >
-          Review Again
-        </button>
+          {/* 📌 Question Review Section */}
+          <div className="space-y-6">
+            {questions.map((q, index) => {
+              const userAnswerIndex = answers[index];
+              const userAnswer =
+                userAnswerIndex !== undefined
+                  ? q.options[userAnswerIndex]
+                  : null;
+
+              const isCorrect = userAnswer === q.correctAnswer;
+
+              return (
+                <div
+                  key={index}
+                  className={`p-6 rounded-2xl shadow-lg ${
+                    userAnswer === null
+                      ? "bg-yellow-500/10"
+                      : isCorrect
+                      ? "bg-green-500/10"
+                      : "bg-red-500/10"
+                  }`}
+                >
+                  <h2 className="font-semibold mb-2">
+                    Q{index + 1}. {q.question}
+                  </h2>
+
+                  <p>
+                    Your Answer:{" "}
+                    {userAnswer ? (
+                      <span
+                        className={`font-bold ${
+                          isCorrect ? "text-green-400" : "text-red-400"
+                        }`}
+                      >
+                        {userAnswer}
+                      </span>
+                    ) : (
+                      <span className="text-yellow-400">
+                        Not Attempted
+                      </span>
+                    )}
+                  </p>
+
+                  {!isCorrect && (
+                    <p className="mt-1">
+                      Correct Answer:{" "}
+                      <span className="text-green-400 font-bold">
+                        {q.correctAnswer}
+                      </span>
+                    </p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* 🔙 Back to Landing Button */}
+          <div className="text-center mt-12">
+            <button
+              onClick={() => navigate("/")}
+              className="px-8 py-3 bg-primary rounded-xl hover:scale-105 transition-all duration-300"
+            >
+              Go Back to Landing Page
+            </button>
+          </div>
+
+        </div>
       </div>
-    </div>
+    </>
   );
 }
