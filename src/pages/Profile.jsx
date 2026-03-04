@@ -1,57 +1,33 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
-import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-
-import axios from "axios";
 
 export default function Profile() {
   const navigate = useNavigate();
-<<<<<<< HEAD
 
+  const [user, setUser] = useState(null);
   const [results, setResults] = useState([]);
   const [totalBookmarks, setTotalBookmarks] = useState(0);
 
-  const user = {
-    name: "Aishi",
-    email: "aishi@gmail.com",
-    exam: "NEET",
-=======
-
-  const [user, setUser] = useState(null);
-  const [activity, setActivity] = useState([]);
-
-  // Fetch user info and activity from localStorage/backend
+  /* ================= LOAD USER ================= */
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
-    if (storedUser) {
-      setUser(storedUser);
-      fetchUserActivity(storedUser.email);
-    } else {
-      navigate("/login"); // redirect if not logged in
+
+    if (!storedUser) {
+      navigate("/login");
+      return;
     }
+
+    setUser(storedUser);
+    loadProfileData();
   }, [navigate]);
 
-  const fetchUserActivity = async (email) => {
-    try {
-      const res = await axios.get(
-        `https://quiz-backend-w5cm.onrender.com/api/attempt/activity/${email}`
-      );
-      setActivity(res.data.activities || []);
-    } catch (err) {
-      console.error("Failed to fetch activity:", err);
-    }
->>>>>>> ffd439699dd86b475521d74d97c7531ae9d792e6
-  };
-
-  /* ================= LOAD DATA FUNCTION ================= */
+  /* ================= LOAD PROFILE DATA ================= */
   const loadProfileData = () => {
-    // Load quiz results
     const savedResults =
       JSON.parse(localStorage.getItem("quiz_results")) || [];
     setResults(savedResults);
 
-    // Count all bookmarks_* keys
     let bookmarkCount = 0;
 
     Object.keys(localStorage).forEach((key) => {
@@ -63,18 +39,6 @@ export default function Profile() {
 
     setTotalBookmarks(bookmarkCount);
   };
-
-  /* ================= INITIAL LOAD ================= */
-  useEffect(() => {
-    loadProfileData();
-
-    // Refresh when returning to page
-    window.addEventListener("focus", loadProfileData);
-
-    return () => {
-      window.removeEventListener("focus", loadProfileData);
-    };
-  }, []);
 
   /* ================= CALCULATIONS ================= */
   const totalTests = results.length;
@@ -97,21 +61,13 @@ export default function Profile() {
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
-<<<<<<< HEAD
-=======
-    setUser(null);
->>>>>>> ffd439699dd86b475521d74d97c7531ae9d792e6
     navigate("/login");
   };
 
-  if (!user) return null; // loading state
+  if (!user) return null;
 
   return (
     <div className="bg-background-dark text-white min-h-screen font-display">
-<<<<<<< HEAD
-=======
-      {/* Navbar */}
->>>>>>> ffd439699dd86b475521d74d97c7531ae9d792e6
       <Navbar showAuth />
 
       {/* PROFILE HEADER */}
@@ -143,17 +99,10 @@ export default function Profile() {
       {/* STATS */}
       <section className="max-w-[1000px] mx-auto px-6 mb-20">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-<<<<<<< HEAD
           <StatCard title="Tests Taken" value={totalTests} />
           <StatCard title="Average Accuracy" value={`${averageAccuracy}%`} />
           <StatCard title="Bookmarks" value={totalBookmarks} />
           <StatCard title="Latest Score" value={latestScore} />
-=======
-          <StatCard title="Global Rank" value={`#${user.rank || "-"}`} />
-          <StatCard title="Accuracy" value={user.accuracy || "-"} />
-          <StatCard title="Tests Taken" value={user.totalTests || 0} />
-          <StatCard title="Bookmarks" value={user.bookmarked || 0} />
->>>>>>> ffd439699dd86b475521d74d97c7531ae9d792e6
         </div>
       </section>
 
@@ -162,12 +111,8 @@ export default function Profile() {
         <h3 className="text-sm font-bold uppercase tracking-wider text-white/40 mb-6">
           Quick Actions
         </h3>
-<<<<<<< HEAD
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-=======
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
->>>>>>> ffd439699dd86b475521d74d97c7531ae9d792e6
           <Link
             to="/results"
             className="glass-card p-6 rounded-2xl hover:scale-[1.02] transition block"
@@ -190,18 +135,13 @@ export default function Profile() {
         </div>
       </section>
 
-<<<<<<< HEAD
-      {/* ================= RECENT RESULTS ================= */}
-=======
-      {/* RECENT ACTIVITY */}
->>>>>>> ffd439699dd86b475521d74d97c7531ae9d792e6
+      {/* RECENT RESULTS */}
       <section className="max-w-[1000px] mx-auto px-6 mb-24">
         <h3 className="text-sm font-bold uppercase tracking-wider text-white/40 mb-6">
           Recent Results
         </h3>
 
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
-<<<<<<< HEAD
           {results.length === 0 && (
             <p className="text-white/40">No quiz attempted yet.</p>
           )}
@@ -225,32 +165,14 @@ export default function Profile() {
         </div>
       </section>
 
-=======
-          {activity.length > 0 ? (
-            activity.map((act, index) => (
-              <Activity key={index} text={act.text} time={act.time} />
-            ))
-          ) : (
-            <p className="text-white/50 text-sm">No recent activity yet.</p>
-          )}
-        </div>
-      </section>
-
-      {/* FOOTER */}
->>>>>>> ffd439699dd86b475521d74d97c7531ae9d792e6
       <footer className="border-t border-white/10 py-8 text-center text-white/40">
-        © 2024 Quiz Master. All rights reserved.
+        © 2026 Quiz Master. All rights reserved.
       </footer>
     </div>
   );
 }
 
-<<<<<<< HEAD
 /* ================= COMPONENT ================= */
-
-=======
-/* ================= COMPONENTS ================= */
->>>>>>> ffd439699dd86b475521d74d97c7531ae9d792e6
 function StatCard({ title, value }) {
   return (
     <div className="glass-card p-6 rounded-2xl text-center">
