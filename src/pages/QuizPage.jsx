@@ -63,8 +63,8 @@ export default function QuizPage() {
       return () => clearInterval(timer);
     }
 
-    if (timeLeft === 0) finishQuiz();
-  }, [timeLeft, finished]);
+   if (timeLeft === 0) finishQuiz();
+}, [timeLeft, finished, finishQuiz]);
 
   const formatTime = () => {
     const m = Math.floor(timeLeft / 60);
