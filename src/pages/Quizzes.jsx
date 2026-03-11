@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
@@ -31,14 +31,12 @@ export default function Quizzes() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedExam, setSelectedExam] = useState(null);
 
-  /* ================= SUBJECT DATA ================= */
   const examSubjects = {
     jee: ["Maths", "Physics", "Chemistry"],
     neet: ["Physics", "Chemistry", "Biology"],
     cet: ["Physics", "Chemistry", "Maths", "Biology"],
   };
 
-  /* ================= AUTO ROTATE MOTIVATION ================= */
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % quotes.length);
@@ -47,7 +45,6 @@ export default function Quizzes() {
     return () => clearInterval(interval);
   }, [quotes.length]);
 
-  /* ================= SAVE LAST QUIZ ================= */
   const startQuiz = (exam, subject) => {
     localStorage.setItem(
       "lastQuiz",
@@ -59,7 +56,6 @@ export default function Quizzes() {
     );
   };
 
-  /* ================= CARD COMPONENT ================= */
   const renderExamCard = (examKey, title, description, icon, iconColor) => (
     <div className="bg-[#1c2127] rounded-xl p-6 border border-white/5 flex flex-col justify-between transition hover:border-primary/40">
       <div>
@@ -99,7 +95,6 @@ export default function Quizzes() {
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-6 lg:px-10 py-20">
-        {/* ================= TITLE ================= */}
         <div className="mb-10">
           <h1 className="text-4xl lg:text-5xl font-bold mb-4">Quiz Master</h1>
           <p className="text-slate-400 max-w-2xl">
@@ -107,11 +102,9 @@ export default function Quizzes() {
           </p>
         </div>
 
-        {/* ================= MOTIVATION SECTION ================= */}
         <div className="mb-16">
           <div className="relative rounded-2xl overflow-hidden bg-[#1c2127] shadow-2xl border border-white/10">
             <div className="relative grid md:grid-cols-2 gap-10 p-10 items-center">
-              {/* Left Visual */}
               <div className="relative hidden md:flex items-center justify-center">
                 <div className="absolute w-72 h-72 rounded-full border border-blue-500/20 animate-spin-slow" />
                 <div className="absolute w-48 h-48 rounded-full border border-white/10" />
@@ -125,7 +118,6 @@ export default function Quizzes() {
                 </div>
               </div>
 
-              {/* Right Text */}
               <div>
                 <span className="inline-block mb-4 px-4 py-1 text-xs font-bold tracking-widest rounded-full bg-primary/20 text-primary">
                   PREP MODE ACTIVE
@@ -146,7 +138,6 @@ export default function Quizzes() {
           </div>
         </div>
 
-        {/* ================= EXAM SECTION ================= */}
         <h2 className="text-2xl font-bold mb-6">All Competitive Exams</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -177,7 +168,7 @@ export default function Quizzes() {
       </main>
 
       <footer className="border-t border-white/10 py-8 text-center text-white/40">
-        © 2024 Quiz Master. All rights reserved.
+        © 2026 Quiz Master. All rights reserved.
       </footer>
     </div>
   );
