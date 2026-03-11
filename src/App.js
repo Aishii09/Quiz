@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-
-
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -12,7 +10,7 @@ import Results from "./pages/Results";
 import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
 import Bookmarks from "./pages/Bookmarks";
-import DemoHome from "./pages/DemoHome";
+import DemoHome from "./pages/DemoHome"; 
 import DemoSubjects from "./pages/DemoSubjects";
 import DemoQuiz from "./pages/DemoQuiz";
 import DemoResult from "./pages/DemoResult";
@@ -21,14 +19,9 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import ProtectedRoute from "./components/ProtectedRoute";
 
-
 function App() {
-  // Track logged-in user
   const [currentUser, setCurrentUser] = useState(null);
 
-  
-
-  // Check if user already logged in
   useEffect(() => {
     const token = localStorage.getItem("token");
     const user = localStorage.getItem("user");
@@ -40,8 +33,6 @@ function App() {
 
   return (
     <Router>
-    
-
       <Routes>
 
         {/* PUBLIC ROUTES */}

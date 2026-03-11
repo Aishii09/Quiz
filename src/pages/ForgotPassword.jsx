@@ -38,7 +38,7 @@ export default function ForgotPassword() {
           <Link to="/results">Results</Link>
           <Link to="/leaderboard">Leaderboard</Link>
         </nav>
-      </header>
+      </header> 
 
       {/* FORM */}
       <div className="flex flex-1 items-center justify-center">

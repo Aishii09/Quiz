@@ -22,7 +22,6 @@ export default function Home() {
     });
 }, []);
 
-
   return (
     <div className="bg-background-dark text-white min-h-screen font-display">
 
@@ -47,7 +46,7 @@ export default function Home() {
               Welcome back 👋, {user ? user.name : "Guest"}
             </h2>
             <p className="text-sm text-white/60">
-              Ready to conquer your challenge today?
+              Ready to conquer your challenge today?  
             </p>
           </div>
         </div>
