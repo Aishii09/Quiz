@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback} from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 
@@ -19,7 +19,7 @@ export default function QuizPage() {
   const [error, setError] = useState("");
 
   /* ================= FINISH QUIZ ================= */
-  function finishQuiz() {
+  const finishQuiz = useCallback(() => {
     let calculatedScore = 0;
 
     questions.forEach((q, i) => {
@@ -59,7 +59,7 @@ export default function QuizPage() {
         totalQuestions: questions.length,
       })
       .catch((err) => console.log(err));
-  }
+  } ,[questions, selectedAnswers, examId, subject]);
 
   /* ================= FETCH QUESTIONS ================= */
   useEffect(() => {
