@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
+// MAIN PAGES
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -10,18 +11,30 @@ import Results from "./pages/Results";
 import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
 import Bookmarks from "./pages/Bookmarks";
-import DemoHome from "./pages/DemoHome"; 
+
+// QUIZ PAGE
+import QuizPage from "./pages/QuizPage";
+
+// DEMO
+import DemoHome from "./pages/DemoHome";
 import DemoSubjects from "./pages/DemoSubjects";
 import DemoQuiz from "./pages/DemoQuiz";
 import DemoResult from "./pages/DemoResult";
 import Certificate from "./pages/Certificate";
+
+// AUTH EXTRA
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import ProtectedRoute from "./components/ProtectedRoute";
 
+// ADMIN
+import Admin from "./pages/Admin";
+
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(true); // ✅ ADDED
 
+  // Check if user already logged in
   useEffect(() => {
     const token = localStorage.getItem("token");
     const user = localStorage.getItem("user");
@@ -29,7 +42,14 @@ function App() {
     if (token && user) {
       setCurrentUser(JSON.parse(user));
     }
+
+    setLoading(false); // ✅ ADDED
   }, []);
+
+  // ✅ ADDED (prevents flicker issue)
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Router>
@@ -43,14 +63,6 @@ function App() {
         <Route path="/reset-password/:token" element={<ResetPassword />} />
 
         {/* PROTECTED ROUTES */}
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute currentUser={currentUser}>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
 
         <Route
           path="/home"
@@ -70,6 +82,16 @@ function App() {
           }
         />
 
+        {/* QUIZ ROUTES */}
+        <Route
+          path="/quiz/:examId/:subject"
+          element={
+            <ProtectedRoute currentUser={currentUser}>
+              <QuizPage />
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/results"
           element={
@@ -84,6 +106,15 @@ function App() {
           element={
             <ProtectedRoute currentUser={currentUser}>
               <Leaderboard currentUser={currentUser} />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute currentUser={currentUser}>
+              <Profile />
             </ProtectedRoute>
           }
         />
@@ -111,6 +142,19 @@ function App() {
         <Route path="/demo/:exam" element={<DemoSubjects />} />
         <Route path="/demo/:exam/:subject" element={<DemoQuiz />} />
         <Route path="/result/:exam/:subject" element={<DemoResult />} />
+
+        {/* ADMIN (✅ FIXED - NOW PROTECTED) */}
+        <Route
+          path="/admin"
+          element={
+            
+              <Admin />
+           
+          }
+        />
+
+        {/* FALLBACK */}
+        <Route path="*" element={<Navigate to="/" />} />
 
       </Routes>
     </Router>
