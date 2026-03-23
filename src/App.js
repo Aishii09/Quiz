@@ -12,6 +12,9 @@ import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
 import Bookmarks from "./pages/Bookmarks";
 
+// ADMIN
+import Admin from "./pages/Admin";
+
 // QUIZ PAGE
 import QuizPage from "./pages/QuizPage";
 
@@ -30,8 +33,10 @@ import ProtectedRoute from "./components/ProtectedRoute";
 // ADMIN
 import Admin from "./pages/Admin";
 
+
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(true); // ✅ ADDED
 
   // Check if user already logged in
   useEffect(() => {
@@ -41,7 +46,14 @@ function App() {
     if (token && user) {
       setCurrentUser(JSON.parse(user));
     }
+
+    setLoading(false); // ✅ ADDED
   }, []);
+
+  // ✅ ADDED (prevents flicker issue)
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Router>
@@ -137,6 +149,14 @@ function App() {
 
         {/* ADMIN */}
         <Route path="/admin" element={<Admin />} />
+        {/* ADMIN (✅ FIXED - NOW PROTECTED) */}
+        <Route
+          path="/admin"
+          element={
+              <Admin />
+
+          }
+        />
 
         {/* FALLBACK */}
         <Route path="*" element={<Navigate to="/" />} />
