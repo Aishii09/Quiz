@@ -12,6 +12,9 @@ import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
 import Bookmarks from "./pages/Bookmarks";
 
+// ADMIN
+import Admin from "./pages/Admin";
+
 // QUIZ PAGE
 import QuizPage from "./pages/QuizPage";
 
@@ -27,8 +30,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import ProtectedRoute from "./components/ProtectedRoute";
 
-// ADMIN
-import Admin from "./pages/Admin";
+
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -147,9 +149,8 @@ function App() {
         <Route
           path="/admin"
           element={
-            
               <Admin />
-           
+
           }
         />
 
