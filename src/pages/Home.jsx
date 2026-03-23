@@ -3,25 +3,23 @@ import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import axios from "axios";
 
-
 export default function Home() {
   const user = JSON.parse(localStorage.getItem("user"));
 
   const progress = localStorage.getItem("weeklyProgress") || 85;
   const remaining = localStorage.getItem("remainingQuizzes") || 2;
+
   useEffect(() => {
-  axios.get("https://quiz-backend-w5cm.onrender.com/")
+    axios.get("https://quiz-backend-w5cm.onrender.com/")
+      .then(res => {
+        console.log("Connected:", res.data);
+      })
+      .catch(err => {
+        console.log("Error:", err);
+      });
+  }, []);
 
-    .then(res => {
-      console.log("Connected:", res.data);
-    })
-    .catch(err => {
-      console.log("Error:", err);
-    });
-}, []);
-
-
-  // ✅ ADD THIS (dummy performance data)
+  // ✅ KEEP THIS (important - used in UI)
   const performance = {
     accuracy: 82,
     quizzesTaken: 14,
@@ -91,7 +89,6 @@ export default function Home() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
 
-          {/* START PRACTICE */}
           <Link
             to="/quizzes"
             className="glass-card p-6 rounded-2xl hover:scale-[1.02] transition block"
