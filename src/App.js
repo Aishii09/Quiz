@@ -12,8 +12,7 @@ import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
 import Bookmarks from "./pages/Bookmarks";
 
-// ADMIN
-import Admin from "./pages/Admin";
+
 
 // QUIZ PAGE
 import QuizPage from "./pages/QuizPage";
@@ -145,14 +144,7 @@ function App() {
         <Route path="/demo/:exam/:subject" element={<DemoQuiz />} />
         <Route path="/result/:exam/:subject" element={<DemoResult />} />
 
-        {/* ADMIN (✅ FIXED - NOW PROTECTED) */}
-        <Route
-          path="/admin"
-          element={
-              <Admin />
-
-          }
-        />
+       
 
         {/* FALLBACK */}
         <Route path="*" element={<Navigate to="/" />} />
