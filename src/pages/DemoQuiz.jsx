@@ -3,40 +3,72 @@ import demoQuestions from "../data/demoQuestions";
 import { useState, useEffect, useMemo } from "react";
 import Timer from "../components/Timer";
 import Navbar from "../components/Navbar";
+import axios from "axios";
 
 export default function DemoQuiz() {
-  const { exam, subject } = useParams();
+  const { examType, subject, quizId } = useParams();
   const navigate = useNavigate();
 
-  const examKey = exam?.toLowerCase();
-  const subjectKey = subject?.toLowerCase();
+  // Create quiz key (supports both formats)
+  const quizKey =
+    quizId || `${examType?.toLowerCase()}-${subject?.toLowerCase()}`;
 
-  // ✅ Use useMemo to prevent unnecessary re-renders / ESLint warning
+  const [backendExam, setBackendExam] = useState(null);
+
+  // Get questions from demo data
   const questions = useMemo(() => {
-    return demoQuestions[examKey]?.[subjectKey] || [];
-  }, [examKey, subjectKey]);
+    return demoQuestions[quizKey] || [];
+  }, [quizKey]);
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
-  const [timeLeft, setTimeLeft] = useState(60); // 🔥 Total exam time
+  const [timeLeft, setTimeLeft] = useState(60);
 
-  // ✅ Auto submit when timer reaches 0
+  /* ================= FETCH FROM BACKEND ================= */
+  useEffect(() => {
+    if (examType && subject) {
+      axios
+        .get(`http://localhost:5000/api/admin/exams/${examType}/${subject}`)
+        .then((res) => {
+          setBackendExam(res.data);
+        })
+        .catch(() => {
+          console.log("No backend exam found, using demo questions.");
+        });
+    }
+  }, [examType, subject]);
+
+  /* ================= AUTO SUBMIT ================= */
   useEffect(() => {
     if (timeLeft === 0) {
-      navigate(`/result/${exam}/${subject}`, {
+      navigate(`/result/${quizKey}`, {
         state: { questions, answers },
       });
     }
-  }, [timeLeft, navigate, exam, subject, questions, answers]);
+  }, [timeLeft, navigate, quizKey, questions, answers]);
 
-  // If no questions, show nothing (or you can show a message)
   if (questions.length === 0) {
-    return null;
+    return (
+      <>
+        <Navbar />
+        <div className="p-6 text-center text-white">
+          <h1 className="text-2xl font-bold">
+            No questions found for this quiz.
+          </h1>
+
+          {backendExam && (
+            <p className="mt-4 text-green-400">
+              Backend exam found: {backendExam.examType} -{" "}
+              {backendExam.subject}
+            </p>
+          )}
+        </div>
+      </>
+    );
   }
 
   const currentQuestion = questions[currentQuestionIndex];
 
-  // ✅ Select option
   const handleOptionSelect = (index) => {
     setAnswers({
       ...answers,
@@ -44,19 +76,16 @@ export default function DemoQuiz() {
     });
   };
 
-  // ✅ Next question / Finish
   const handleNext = () => {
     if (currentQuestionIndex + 1 < questions.length) {
       setCurrentQuestionIndex((prev) => prev + 1);
     } else {
-      // Manual submit
-      navigate(`/result/${exam}/${subject}`, {
+      navigate(`/result/${quizKey}`, {
         state: { questions, answers },
       });
     }
   };
 
-  // ✅ Previous question
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex((prev) => prev - 1);
@@ -71,7 +100,7 @@ export default function DemoQuiz() {
         {/* HEADER */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-black uppercase">
-            {exam} - {subject}
+            {quizKey.replace("-", " ")}
           </h1>
           <p className="text-white/60 mt-2">
             Question {currentQuestionIndex + 1} of {questions.length}
@@ -84,7 +113,7 @@ export default function DemoQuiz() {
             timeLeft={timeLeft}
             setTimeLeft={setTimeLeft}
             onTimeUp={() =>
-              navigate(`/result/${exam}/${subject}`, {
+              navigate(`/result/${quizKey}`, {
                 state: { questions, answers },
               })
             }

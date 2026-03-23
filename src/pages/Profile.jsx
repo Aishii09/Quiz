@@ -1,61 +1,83 @@
+import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
-import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-
-import axios from "axios";
 
 export default function Profile() {
   const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
-  const [activity, setActivity] = useState([]);
+  const [results, setResults] = useState([]);
+  const [totalBookmarks, setTotalBookmarks] = useState(0);
 
-  // Fetch user info and activity from localStorage/backend
+  /* ================= LOAD USER ================= */
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
-    if (storedUser) {
-      setUser(storedUser);
-      fetchUserActivity(storedUser.email);
-    } else {
-      navigate("/login"); // redirect if not logged in
+
+    if (!storedUser) {
+      navigate("/login");
+      return;
     }
+
+    setUser(storedUser);
+    loadProfileData();
   }, [navigate]);
 
-  const fetchUserActivity = async (email) => {
-    try {
-      const res = await axios.get(
-        `https://quiz-backend-w5cm.onrender.com/api/attempt/activity/${email}`
-      );
-      setActivity(res.data.activities || []);
-    } catch (err) {
-      console.error("Failed to fetch activity:", err);
-    }
+  /* ================= LOAD PROFILE DATA ================= */
+  const loadProfileData = () => {
+    const savedResults =
+      JSON.parse(localStorage.getItem("quiz_results")) || [];
+    setResults(savedResults);
+
+    let bookmarkCount = 0;
+
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith("bookmarks_")) {
+        const items = JSON.parse(localStorage.getItem(key)) || [];
+        bookmarkCount += items.length;
+      }
+    });
+
+    setTotalBookmarks(bookmarkCount);
   };
+
+  /* ================= CALCULATIONS ================= */
+  const totalTests = results.length;
+
+  const averageAccuracy =
+    totalTests > 0
+      ? (
+          results.reduce((acc, r) => acc + Number(r.percentage), 0) /
+          totalTests
+        ).toFixed(0)
+      : 0;
+
+  const latestScore =
+    results.length > 0
+      ? `${results[results.length - 1].score}/${
+          results[results.length - 1].total
+        }`
+      : "-";
 
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
-    setUser(null);
     navigate("/login");
   };
 
-  if (!user) return null; // loading state
+  if (!user) return null;
 
   return (
     <div className="bg-background-dark text-white min-h-screen font-display">
-      {/* Navbar */}
       <Navbar showAuth />
 
       {/* PROFILE HEADER */}
       <section className="pt-20 pb-16 px-6">
         <div className="max-w-[1000px] mx-auto flex flex-col md:flex-row gap-8 items-center justify-between">
           <div className="flex flex-col md:flex-row gap-8 items-center">
-            {/* AVATAR */}
             <div className="size-32 rounded-full bg-gradient-to-br from-primary to-accent-purple flex items-center justify-center text-5xl font-black">
               {user.name.charAt(0)}
             </div>
 
-            {/* USER INFO */}
             <div className="text-center md:text-left">
               <h1 className="text-4xl font-black">{user.name}</h1>
               <p className="text-white/50">{user.email}</p>
@@ -65,7 +87,6 @@ export default function Profile() {
             </div>
           </div>
 
-          {/* LOGOUT BUTTON */}
           <button
             onClick={handleLogout}
             className="border border-red-500/40 text-red-400 px-6 py-3 rounded-xl font-bold hover:bg-red-500/10 transition"
@@ -78,10 +99,10 @@ export default function Profile() {
       {/* STATS */}
       <section className="max-w-[1000px] mx-auto px-6 mb-20">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          <StatCard title="Global Rank" value={`#${user.rank || "-"}`} />
-          <StatCard title="Accuracy" value={user.accuracy || "-"} />
-          <StatCard title="Tests Taken" value={user.totalTests || 0} />
-          <StatCard title="Bookmarks" value={user.bookmarked || 0} />
+          <StatCard title="Tests Taken" value={totalTests} />
+          <StatCard title="Average Accuracy" value={`${averageAccuracy}%`} />
+          <StatCard title="Bookmarks" value={totalBookmarks} />
+          <StatCard title="Latest Score" value={latestScore} />
         </div>
       </section>
 
@@ -90,82 +111,73 @@ export default function Profile() {
         <h3 className="text-sm font-bold uppercase tracking-wider text-white/40 mb-6">
           Quick Actions
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Link
             to="/results"
             className="glass-card p-6 rounded-2xl hover:scale-[1.02] transition block"
           >
-            <span className="material-symbols-outlined text-primary text-3xl mb-4 block">
-              insights
-            </span>
             <p className="font-bold text-lg">View Results</p>
-            <p className="text-sm text-white/50">Analyze your performance</p>
+            <p className="text-sm text-white/50">
+              Analyze your performance
+            </p>
           </Link>
 
           <Link
             to="/bookmarks"
             className="glass-card p-6 rounded-2xl hover:scale-[1.02] transition block"
           >
-            <span className="material-symbols-outlined text-blue-400 text-3xl mb-4 block">
-              bookmark
-            </span>
             <p className="font-bold text-lg">Bookmarks</p>
-            <p className="text-sm text-white/50">Revise saved questions</p>
-          </Link>
-
-          <Link
-            to="/leaderboard"
-            className="glass-card p-6 rounded-2xl hover:scale-[1.02] transition block"
-          >
-            <span className="material-symbols-outlined text-accent-purple text-3xl mb-4 block">
-              trophy
-            </span>
-            <p className="font-bold text-lg">Leaderboard</p>
-            <p className="text-sm text-white/50">See where you stand</p>
+            <p className="text-sm text-white/50">
+              Revise saved questions
+            </p>
           </Link>
         </div>
       </section>
 
-      {/* RECENT ACTIVITY */}
+      {/* RECENT RESULTS */}
       <section className="max-w-[1000px] mx-auto px-6 mb-24">
         <h3 className="text-sm font-bold uppercase tracking-wider text-white/40 mb-6">
-          Recent Activity
+          Recent Results
         </h3>
 
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
-          {activity.length > 0 ? (
-            activity.map((act, index) => (
-              <Activity key={index} text={act.text} time={act.time} />
-            ))
-          ) : (
-            <p className="text-white/50 text-sm">No recent activity yet.</p>
+          {results.length === 0 && (
+            <p className="text-white/40">No quiz attempted yet.</p>
           )}
+
+          {results
+            .slice(-5)
+            .reverse()
+            .map((res, index) => (
+              <div
+                key={index}
+                className="flex justify-between text-sm border-b border-white/10 pb-2"
+              >
+                <p>
+                  {res.examId} - {res.subject}
+                </p>
+                <span className="text-white/40">
+                  {res.score}/{res.total} ({res.percentage}%)
+                </span>
+              </div>
+            ))}
         </div>
       </section>
 
-      {/* FOOTER */}
       <footer className="border-t border-white/10 py-8 text-center text-white/40">
-        © 2024 Quiz Master. All rights reserved.
+        © 2026 Quiz Master. All rights reserved.
       </footer>
     </div>
   );
 }
 
-/* ================= COMPONENTS ================= */
+/* ================= COMPONENT ================= */
 function StatCard({ title, value }) {
   return (
     <div className="glass-card p-6 rounded-2xl text-center">
       <p className="text-white/50 text-sm mb-2">{title}</p>
       <p className="text-3xl font-black">{value}</p>
-    </div>
-  );
-}
-
-function Activity({ text, time }) {
-  return (
-    <div className="flex justify-between text-sm">
-      <p>{text}</p>
-      <span className="text-white/40">{time}</span>
     </div>
   );
 }

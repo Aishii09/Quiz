@@ -1,5 +1,5 @@
-import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
+import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -10,6 +10,7 @@ export default function Results() {
   const studentId = localStorage.getItem("studentId");
   const studentName = localStorage.getItem("studentName");
 
+  /* ================= FETCH QUIZ HISTORY ================= */
   useEffect(() => {
     const fetchHistory = async () => {
       try {
@@ -23,6 +24,8 @@ export default function Results() {
     if (studentId) fetchHistory();
   }, [studentId]);
 
+  const latestScore = quizHistory[0]?.score ?? 0;
+
   const getBadge = (score) => {
     if (score >= 85) return "Excellent 🔥";
     if (score >= 65) return "Good 👍";
@@ -30,26 +33,24 @@ export default function Results() {
   };
 
   const handleCertificate = () => {
-  const attemptToUse = quizHistory[0];
+    const attemptToUse = quizHistory[0];
 
-  if (!attemptToUse) {
-    alert("You must complete a quiz before generating a certificate.");
-    return;
-  }
+    if (!attemptToUse) {
+      alert("You must complete a quiz before generating a certificate.");
+      return;
+    }
 
-  navigate("/certificate", {
-    state: {
-      name: studentName || "Student",
-      subject: attemptToUse.quiz?.title,
-      percentage: attemptToUse.score + "%",
-      date: new Date(
-        attemptToUse.completedAt || attemptToUse.createdAt
-      ).toLocaleDateString(),
-    },
-  });
-};
-
-  const latestScore = quizHistory[0]?.score ?? 0;
+    navigate("/certificate", {
+      state: {
+        name: studentName || "Student",
+        subject: attemptToUse.quiz?.title,
+        percentage: attemptToUse.score + "%",
+        date: new Date(
+          attemptToUse.completedAt || attemptToUse.createdAt
+        ).toLocaleDateString(),
+      },
+    });
+  };
 
   return (
     <div className="bg-background-dark text-white min-h-screen font-display">
@@ -58,21 +59,19 @@ export default function Results() {
       <main className="flex justify-center py-20 px-4">
         <div className="max-w-[1000px] w-full">
           <div className="text-center mb-12">
-            <h1 className="text-[42px] font-bold">Test Completed</h1>
+            <h1 className="text-[42px] font-bold">Latest Test Result</h1>
             <p className="text-white/60 text-lg">
               {quizHistory[0]?.quiz?.title || "Quiz Summary"}
             </p>
           </div>
 
-          {/* SCORE RING */}
+          {/* SCORE DISPLAY */}
           <div className="flex justify-center mb-6">
             <div className="relative size-64 flex items-center justify-center">
               <div className="absolute inset-0 rounded-full border-[12px] border-white/10" />
               <div className="absolute inset-0 rounded-full border-[12px] border-primary" />
               <div className="z-10 text-center">
-                <p className="text-6xl font-bold">
-                  {latestScore}%
-                </p>
+                <p className="text-6xl font-bold">{latestScore}%</p>
                 <p className="text-primary text-sm uppercase tracking-widest">
                   Overall Score
                 </p>
@@ -80,14 +79,13 @@ export default function Results() {
             </div>
           </div>
 
-          {/* PERFORMANCE BADGE */}
           <div className="text-center mb-10">
             <span className="inline-block px-6 py-2 rounded-full bg-primary/20 text-primary font-bold">
               {getBadge(latestScore)}
             </span>
           </div>
 
-          {/* GENERATE CERTIFICATE BUTTON */}
+          {/* GENERATE CERTIFICATE */}
           <div className="flex justify-center mb-10">
             <button
               onClick={handleCertificate}
@@ -126,7 +124,7 @@ export default function Results() {
         </div>
       </main>
 
-      {/* QUIZ HISTORY */}
+      {/* QUIZ HISTORY TABLE */}
       <div className="mt-16 mx-auto max-w-[1000px] bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
         <h2 className="text-xl font-bold px-6 py-4 border-b border-white/10">
           Previous Quiz Attempts

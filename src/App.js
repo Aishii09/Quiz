@@ -30,6 +30,8 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import ProtectedRoute from "./components/ProtectedRoute";
 
+// ADMIN
+import Admin from "./pages/Admin";
 
 
 function App() {
@@ -145,6 +147,8 @@ function App() {
         <Route path="/demo/:exam/:subject" element={<DemoQuiz />} />
         <Route path="/result/:exam/:subject" element={<DemoResult />} />
 
+        {/* ADMIN */}
+        <Route path="/admin" element={<Admin />} />
         {/* ADMIN (✅ FIXED - NOW PROTECTED) */}
         <Route
           path="/admin"

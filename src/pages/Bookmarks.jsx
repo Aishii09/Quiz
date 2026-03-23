@@ -1,17 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 
 export default function Bookmarks() {
-  const allBookmarks = JSON.parse(
-    localStorage.getItem("bookmarks") || "[]"
-  );
-
+  const [bookmarks, setBookmarks] = useState([]);
   const [selectedExam, setSelectedExam] = useState("ALL");
 
+  /* ================= LOAD BOOKMARKS ================= */
+  useEffect(() => {
+    const saved =
+      JSON.parse(localStorage.getItem("bookmarks")) || [];
+    setBookmarks(saved);
+  }, []);
+
+  /* ================= FILTER ================= */
   const filteredBookmarks =
     selectedExam === "ALL"
-      ? allBookmarks
-      : allBookmarks.filter((b) => b.exam === selectedExam);
+      ? bookmarks
+      : bookmarks.filter((b) => b.examId === selectedExam);
+
+  const exams = ["ALL", "NEET", "CET", "JEE", "DCET"];
 
   return (
     <div className="bg-background-dark text-white min-h-screen font-display">
@@ -25,11 +32,11 @@ export default function Bookmarks() {
 
         {/* FILTER TABS */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mb-12">
-          {["ALL", "NEET", "CET", "JEE", "DCET"].map((exam) => {
+          {exams.map((exam) => {
             const count =
               exam === "ALL"
-                ? allBookmarks.length
-                : allBookmarks.filter((b) => b.exam === exam).length;
+                ? bookmarks.length
+                : bookmarks.filter((b) => b.examId === exam).length;
 
             return (
               <button
@@ -82,18 +89,19 @@ export default function Bookmarks() {
                     Q{index + 1}. {q.question}
                   </p>
                   <span className="text-xs px-3 py-1 rounded-full bg-primary/20 text-primary font-bold">
-                    {q.exam}
+                    {q.examId}
                   </span>
                 </div>
 
                 <ul className="text-sm text-white/70 space-y-1">
                   {q.options.map((opt, i) => (
-                    <li key={i}>• {opt}</li>
+                    <li key={i}>• {opt.text}</li>
                   ))}
                 </ul>
 
                 <p className="mt-3 text-sm text-green-400 font-semibold">
-                  Correct Answer: {q.correctAnswer}
+                  Correct Answer:{" "}
+                  {q.options.find((o) => o.isCorrect)?.text}
                 </p>
               </div>
             ))}
@@ -101,7 +109,6 @@ export default function Bookmarks() {
         )}
       </main>
 
-      {/* FOOTER */}
       <footer className="border-t border-white/10 py-8 text-center text-white/40">
         © 2024 Quiz Master. All rights reserved.
       </footer>
